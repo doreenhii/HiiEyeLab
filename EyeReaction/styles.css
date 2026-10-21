@@ -1,69 +1,192 @@
-/* Import global cohesive luxury typography layout */
 @import url('https://googleapis.com');
 
 body {
     margin: 0;
-    padding: 0;
+    padding: 20px 0;
     font-family: 'Cormorant Garamond', Georgia, serif;
-    font-size: 1.2rem;
-    background-color: #1f2221; /* Matches Main Matte Spruce Slate */
-    color: #f4f1ea; /* Matches Antique Ecru */
+    font-size: 1.15rem;
+    background-color: #1f2221;
+    color: #f4f1ea;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 h1 { 
     font-family: 'Playfair Display', serif;
     font-weight: 500;
     font-style: italic;
-    color: #dfcbb5; /* Luxury Warm Gold Parchment */
+    color: #dfcbb5;
     margin-bottom: 5px; 
     text-align: center;
 }
 
 p { 
-    max-width: 550px; 
+    max-width: 600px; 
     text-align: center; 
     margin-top: 5px; 
-    color: #cbd1ce; /* Muted Sage Text */
+    color: #cbd1ce; 
     line-height: 1.5;
+}
+
+/* Luxury Reference Board Styles */
+#rules-matrix-board {
+    display: flex;
+    gap: 20px;
+    width: 90vw;
+    max-width: 800px;
+    background-color: #272b29;
+    border: 1px solid #373d3a;
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 10px;
+    box-sizing: border-box;
+}
+
+.matrix-column {
+    flex: 1;
+    background: #1f2221;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #2d3230;
+}
+
+.matrix-column h3 {
+    font-family: 'Playfair Display', serif;
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.matrix-column h3[id^="easy"] { color: #dfcbb5; }
+.matrix-hint {
+    font-size: 0.9rem;
+    color: #b2b8b5;
+    margin: 0 0 8px 0;
+    text-align: center;
+}
+
+.matrix-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+.matrix-grid div span {
+    font-family: 'Playfair Display', serif;
+    color: #dfcbb5;
+    font-weight: bold;
+    background: #272b29;
+    padding: 1px 6px;
+    border-radius: 4px;
+}
+
+#distractor-warning-banner {
+    max-width: 800px;
+    width: 90vw;
+    font-size: 0.95rem;
+    color: #cbd1ce;
+    background-color: #2a2323;
+    border: 1px solid #5a3c3c;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-top: 12px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+#distractor-warning-banner span {
+    background: #1f2221;
+    padding: 0 4px;
+    border-radius: 3px;
+    font-family: monospace;
+    color: #dfcbb5;
+}
+
+.difficulty-toggle-box {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.difficulty-toggle-box select {
+    background-color: #272b29;
+    color: #dfcbb5;
+    border: 1px solid #4a524f;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+/* Dynamic Error Alert Banner styling */
+#error-alert-banner {
+    background-color: #8c4a4a;
+    color: #f4f1ea;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: bold;
+    padding: 8px 24px;
+    border-radius: 20px;
+    margin-top: 15px;
+    box-shadow: 0 4px 15px rgba(140, 74, 74, 0.4);
+    animation: flashAlert 0.3s ease-in-out;
+}
+
+@keyframes flashAlert {
+    0% { transform: scale(0.9); opacity: 0; }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+#game-arena-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 15px;
+    width: 95vw;
+    max-width: 900px;
 }
 
 #game-container {
     position: relative;
-    width: 90vw;
-    max-width: 650px;
-    height: 420px;
-    background: #272b29; /* Warm Charcoal Card background */
-    border-radius: 14px; /* Organic Art Nouveau corner curves */
+    flex-grow: 1;
+    max-width: 600px;
+    height: 380px;
+    background: #272b29;
+    border-radius: 14px;
     border: 1px solid #373d3a;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-    cursor: crosshair;
-    margin-top: 15px;
 }
 
 #target {
     display: none;
     position: absolute;
-    width: 44px;
-    height: 44px;
+    width: 50px;
+    height: 50px;
     background: radial-gradient(circle, #dfcbb5, #7d6b58); 
     border-radius: 50%;
     box-shadow: 0 0 15px rgba(223, 203, 181, 0.4);
     transform: translate(-50%, -50%);
-    transition: all 0.05s ease;
-}
-
-#target::after {
-    content: '👁️';
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: bold;
+    color: #1f2221;
+    user-select: none;
 }
 
 #screen-overlay {
@@ -73,7 +196,7 @@ p {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba(22, 24, 23, 0.95); /* Fluid solid luxury velvet backdrop */
+    background: rgba(22, 24, 23, 0.95);
     border-radius: 13px;
     z-index: 10;
     text-align: center;
@@ -94,9 +217,9 @@ button {
     font-size: 1.1rem;
     font-weight: 600;
     color: #f4f1ea;
-    background: #7d6b58; /* Earthy Taupe button */
+    background: #7d6b58;
     border: 1px solid rgba(223, 203, 181, 0.2);
-    border-radius: 30px; /* Elegant flowing curves */
+    border-radius: 30px;
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     transition: background-color 0.25s, transform 0.2s;
@@ -106,8 +229,51 @@ button:hover {
     background: #8e7c69; 
 }
 
+#dpad-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 180px;
+    background: #272b29;
+    padding: 15px;
+    border-radius: 14px;
+    border: 1px solid #373d3a;
+}
+
+.dpad-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    margin: 8px 0;
+}
+
+.dpad-btn {
+    width: 52px;
+    height: 52px;
+    padding: 0;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1f2221;
+    color: #dfcbb5;
+    border-color: #4a524f;
+    border-radius: 50%;
+}
+.dpad-btn:hover { background-color: #373d3a; }
+
+#streak-counter {
+    margin-top: 12px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: #dfcbb5;
+    font-style: italic;
+}
+
 .score-dashboard {
-    margin-top: 18px; 
+    margin-top: 12px; 
     display: flex; 
     align-items: center; 
     gap: 12px; 
@@ -117,8 +283,7 @@ button:hover {
 #high-score-display {
     font-family: 'Cormorant Garamond', serif; 
     font-size: 1.25rem; 
-    color: #dfcbb5; 
-    font-style: italic;
+    color: #cbd1ce; 
 }
 
 #reset-score-btn {
@@ -128,12 +293,11 @@ button:hover {
     background-color: transparent; 
     border: 1px solid #4a524f; 
     color: #8c4a4a; 
-    border-radius: 6px; 
-    display: none;
+    border-radius: 6px;
 }
 
 .home-backlink {
-    margin-top: 25px;
+    margin-top: 15px;
     color: #7d6b58;
     text-decoration: none;
     font-size: 1.1rem;
@@ -143,4 +307,11 @@ button:hover {
 .home-backlink:hover {
     color: #dfcbb5;
     border-bottom-color: #dfcbb5;
+}
+
+.hidden { display: none !important; }
+
+@media(max-width: 740px) {
+    #rules-matrix-board { flex-direction: column; }
+    #game-arena-wrapper { flex-direction: column; }
 }

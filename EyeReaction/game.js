@@ -5,89 +5,202 @@ const container = document.getElementById('game-container');
 const highScoreDisplay = document.getElementById('high-score-display');
 const resetScoreBtn = document.getElementById('reset-score-btn');
 const startBtn = document.getElementById('start-btn');
+const difficultySelect = document.getElementById('difficulty-select');
+const streakCounter = document.getElementById('streak-counter');
+const errorAlertBanner = document.getElementById('error-alert-banner');
 
-let clickCount = 0;
+// Updated configuration array containing the requested novel distractors
+const validDirections = ['<', '>', '^', 'v'];
+const distractorSymbols = ['-', '~', '#', '@', '*', '?', '}', '\\', 'c', '7', '4'];
+
+const symbolToKeyMap = {
+    '<': 'ArrowLeft',
+    '>': 'ArrowRight',
+    '^': 'ArrowUp',
+    'v': 'ArrowDown'
+};
+
+const hardModeInversionMap = {
+    '<': 'ArrowRight', 
+    '>': 'ArrowLeft',  
+    '^': 'ArrowDown',  
+    'v': 'ArrowUp'     
+};
+
+let correctStreak = 0;
 let startTime;
-let totalTimes = 0;
-const maxClicks = 5;
+let gameActive = false;
+let currentSymbol = '';
+let totalTrialElapsedTime = 0;
+let errorTimeout = null;
+const targetStreakGoal = 5;
 
-// 1. Storage Display Controller Function
+function getLocalStorageKey() {
+    return `hiiEyeLab_sortingBest_${difficultySelect.value}`;
+}
+
 function updateHighScoreUI() {
-    let storedBest = localStorage.getItem('hiiEyeLab_bestSaccade');
+    const key = getLocalStorageKey();
+    let storedBest = localStorage.getItem(key);
     if (storedBest) {
-        highScoreDisplay.innerText = `Personal Best: ${storedBest} ms`;
+        highScoreDisplay.innerText = `Personal Best (${difficultySelect.value.toUpperCase()}): ${storedBest} ms`;
         resetScoreBtn.style.display = 'inline-block';
     } else {
-        highScoreDisplay.innerText = `Personal Best: No records yet`;
+        highScoreDisplay.innerText = `Personal Best (${difficultySelect.value.toUpperCase()}): No records yet`;
         resetScoreBtn.style.display = 'none';
     }
 }
 
-// Check scores on screen bootup
+difficultySelect.addEventListener('change', updateHighScoreUI);
 updateHighScoreUI();
 
-// 2. Click Action Directives
 startBtn.addEventListener('pointerdown', startGame);
 
 function startGame() {
-    clickCount = 0;
-    totalTimes = 0;
+    correctStreak = 0;
+    totalTrialElapsedTime = 0;
+    gameActive = true;
     overlay.style.display = 'none';
-    spawnTarget();
+    if (errorTimeout) clearTimeout(errorTimeout);
+    errorAlertBanner.classList.add('hidden');
+    updateStreakCounterUI();
+    spawnTargetElement();
 }
 
-function spawnTarget() {
-    if (clickCount >= maxClicks) {
-        endGame();
-        return;
-    }
+function updateStreakCounterUI() {
+    streakCounter.innerText = `Correct Actions Counter: ${correctStreak} / ${targetStreakGoal}`;
+}
+
+function triggerStreakFailureFeedback() {
+    correctStreak = 0;
+    updateStreakCounterUI();
+    
+    // Animate the red warning banner overlay
+    errorAlertBanner.classList.remove('hidden');
+    
+    if (errorTimeout) clearTimeout(errorTimeout);
+    errorTimeout = setTimeout(() => {
+        errorAlertBanner.classList.add('hidden');
+    }, 1200);
+}
+
+function spawnTargetElement() {
+    if (!gameActive) return;
+    
     target.style.display = 'none';
     
-    const delay = Math.random() * 1400 + 600;
+    // 65% true instruction code symbol, 35% random distractor symbol configuration balance
+    const isDistractor = Math.random() < 0.35;
+    
+    if (isDistractor) {
+        currentSymbol = distractorSymbols[Math.floor(Math.random() * distractorSymbols.length)];
+    } else {
+        currentSymbol = validDirections[Math.floor(Math.random() * validDirections.length)];
+    }
+    
+    const delay = Math.random() * 800 + 400;
     
     setTimeout(() => {
-        const maxX = container.clientWidth - 50;
-        const maxY = container.clientHeight - 50;
+        if (!gameActive) return;
         
-        const randomX = Math.random() * maxX + 25;
-        const randomY = Math.random() * maxY + 25;
+        target.innerText = currentSymbol;
+        
+        const maxX = container.clientWidth - 60;
+        const maxY = container.clientHeight - 60;
+        
+        const randomX = Math.random() * maxX + 30;
+        const randomY = Math.random() * maxY + 30;
         
         target.style.left = randomX + 'px';
         target.style.top = randomY + 'px';
-        target.style.display = 'block';
+        target.style.display = 'flex';
         
         startTime = performance.now();
     }, delay);
 }
 
-// Tablet-responsive capture target down event
-target.addEventListener('pointerdown', (e) => {
-    e.stopPropagation();
+function processPlayerInput(pressedInput) {
+    if (!gameActive || target.style.display === 'none') return;
+    
     const elapsed = performance.now() - startTime;
-    totalTimes += elapsed;
-    clickCount++;
-    spawnTarget();
+    const currentTierMode = difficultySelect.value;
+    const isDistractorSymbol = distractorSymbols.includes(currentSymbol);
+    
+    let expectedCorrectKey = null;
+    
+    if (!isDistractorSymbol) {
+        if (currentTierMode === 'easy') {
+            expectedCorrectKey = symbolToKeyMap[currentSymbol];
+        } else {
+            expectedCorrectKey = hardModeInversionMap[currentSymbol];
+        }
+    }
+    
+    if (isDistractorSymbol) {
+        // Pressing any input during a distractor breaks the sequence streak immediately
+        triggerStreakFailureFeedback();
+    } else if (pressedInput === expectedCorrectKey) {
+        correctStreak++;
+        totalTrialElapsedTime += elapsed;
+        // Suppress visual errors if a correct choice recovery sequence was performed quickly
+        errorAlertBanner.classList.add('hidden');
+    } else {
+        triggerStreakFailureFeedback();
+    }
+    
+    updateStreakCounterUI();
+    
+    if (correctStreak >= targetStreakGoal) {
+        endGameSession();
+    } else {
+        spawnTargetElement();
+    }
+}
+
+window.addEventListener('keydown', (e) => {
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        e.preventDefault(); 
+        processPlayerInput(e.key);
+    }
 });
 
-// 3. Evaluation & Record Wipes Processing
-function endGame() {
-    const finalAverage = Math.round(totalTimes / maxClicks);
+document.querySelectorAll('.dpad-btn').forEach(btn => {
+    btn.addEventListener('pointerdown', (e) => {
+        e.stopPropagation();
+        const targetedDirection = e.target.getAttribute('data-dir');
+        processPlayerInput(targetedDirection);
+    });
+});
+
+target.addEventListener('pointerdown', (e) => {
+    e.stopPropagation();
+    const currentMatchedDirectKey = symbolToKeyMap[currentSymbol] || 'InvalidMatch';
+    processPlayerInput(currentMatchedDirectKey);
+});
+
+function endGameSession() {
+    gameActive = false;
+    target.style.display = 'none';
+    errorAlertBanner.classList.add('hidden');
+    
+    const finalAverage = Math.round(totalTrialElapsedTime / targetStreakGoal);
     overlay.style.display = 'flex';
     
     let evaluation = "";
-    if (finalAverage < 220) {
-        evaluation = "🎖️ Soldier / Pro Athlete Level Vision!";
-    } else if (finalAverage < 320) {
-        evaluation = "⚡ Excellent Human Eye Reflexes!";
+    if (finalAverage < 350) {
+        evaluation = "🎖️ Soldier / Pro Athlete Sorting Processing Speeds!";
+    } else if (finalAverage < 550) {
+        evaluation = "⚡ Excellent Complex Spatial Coordination!";
     } else {
-        evaluation = "👁️ Good tracking! Keep exercising your eyes.";
+        evaluation = "👁️ Clear identification tracking! Practice to decrease speed values.";
     }
 
-    let currentBest = localStorage.getItem('hiiEyeLab_bestSaccade');
+    const key = getLocalStorageKey();
+    let currentBest = localStorage.getItem(key);
     
     if (!currentBest || finalAverage < parseInt(currentBest)) {
-        localStorage.setItem('hiiEyeLab_bestSaccade', finalAverage);
-        evaluation = `🎉 NEW LABORATORY RECORD!<br><span style="font-size: 1.1rem; color: #dfcbb5;">You shaved off response latency!</span><br><br>${evaluation}`;
+        localStorage.setItem(key, finalAverage);
+        evaluation = `🎉 NEW TRIAL TIER RECORD!<br><span style="font-size: 1.1rem; color: #dfcbb5;">Cognitive velocity updated!</span><br><br>${evaluation}`;
     }
 
     updateHighScoreUI();
@@ -96,11 +209,10 @@ function endGame() {
     startBtn.innerText = "TRY TESTING AGAIN";
 }
 
-// Clear high scores
 resetScoreBtn.addEventListener('pointerdown', (e) => {
     e.stopPropagation();
-    if (confirm("Clear this tablet's personal best time for the next scientist?")) {
-        localStorage.removeItem('hiiEyeLab_bestSaccade');
+    if (confirm(`Clear this tablet's local personal record score for the active level tier?`)) {
+        localStorage.removeItem(getLocalStorageKey());
         updateHighScoreUI();
     }
 });

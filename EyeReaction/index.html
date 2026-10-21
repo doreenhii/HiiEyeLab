@@ -3,24 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HiiEyeLab — Eye Reflex Trainer</title>
-    <!-- Link to external typography and stylesheet layout -->
+    <title>HiiEyeLab — Cognitive Sorting Trainer</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <h1>Train Your Brain's Saccade Speed! 👁️⚡</h1>
-    <p>In science class, we learned trained athletes snap their gaze rapidly. Catch the shifting target eye to check your rapid eye reaction time!</p>
+    <h1>Train Your Eye-Hand Coordination Speed! 👁️⚡</h1>
+    <p>How fast can you decode symbols, filter out noise, and execute logical sorting rules? Your goal is to achieve <strong>5 correct actions in a row</strong> as quickly as possible.</p>
 
-    <div id="game-container">
-        <div id="target"></div>
-        <div id="screen-overlay">
-            <h2 id="msg">Ready to test your eyes?</h2>
-            <button id="start-btn">START TESTING</button>
+    <!-- Interactive Laboratory Reference Matrix Board -->
+    <div id="rules-matrix-board">
+        <div class="matrix-column">
+            <h3>🟢 Easy Mode Rule</h3>
+            <p class="matrix-hint">Click or press the arrow matching the symbol's true direction:</p>
+            <div class="matrix-grid">
+                <div><span>^</span> ➡️ Up</div>
+                <div><span>v</span> ➡️ Down</div>
+                <div><span>&lt;</span> ➡️ Left</div>
+                <div><span>&gt;</span> ➡️ Right</div>
+            </div>
+        </div>
+        <div class="matrix-column">
+            <h3>🔴 Hard Mode Rule (Inverted Logic)</h3>
+            <p class="matrix-hint">Cognitive Flip! Execute the opposite vector rule immediately:</p>
+            <div class="matrix-grid">
+                <div><span>^</span> ➡️ <strong>Down</strong></div>
+                <div><span>v</span> ➡️ <strong>Up</strong></div>
+                <div><span>&lt;</span> ➡️ <strong>Right</strong></div>
+                <div><span>&gt;</span> ➡️ <strong>Left</strong></div>
+            </div>
         </div>
     </div>
 
-    <!-- Record Dashboard Panel Layout -->
+    <!-- Universal Noise/Distractor Warning Label -->
+    <div id="distractor-warning-banner">
+        ⚠️ <strong>Distractor Warning:</strong> Symbols like <span>-</span>, <span>~</span>, <span>#</span>, <span>@</span>, <span>*</span>, <span>?</span>, <span>}</span>, <span>\</span>, <span>c</span>, <span>7</span>, or <span>4</span> are noise! Do <strong>not</strong> press any direction for them, or your streak resets to zero.
+    </div>
+
+    <div class="difficulty-toggle-box">
+        <label for="difficulty-select">Testing Tier:</label>
+        <select id="difficulty-select">
+            <option value="easy">Easy Mode (Match Arrows Directly)</option>
+            <option value="hard">Hard Mode (Inverted Logic Rule)</option>
+        </select>
+    </div>
+
+    <!-- Wrong Input Alert Banner Notification Node -->
+    <div id="error-alert-banner" class="hidden">❌ Streak Broken! Resetting to 0...</div>
+
+    <div id="game-arena-wrapper">
+        <div id="game-container">
+            <div id="target"></div>
+            <div id="screen-overlay">
+                <h2 id="msg">Ready to test your eyes?</h2>
+                <button id="start-btn">START TESTING</button>
+            </div>
+        </div>
+
+        <div id="dpad-container">
+            <button class="dpad-btn" id="dpad-up" data-dir="ArrowUp">▲</button>
+            <div class="dpad-row">
+                <button class="dpad-btn" id="dpad-left" data-dir="ArrowLeft">◀</button>
+                <button class="dpad-btn" id="dpad-right" data-dir="ArrowRight">▶</button>
+            </div>
+            <button class="dpad-btn" id="dpad-down" data-dir="ArrowDown">▼</button>
+        </div>
+    </div>
+
+    <div id="streak-counter">Correct Actions Counter: 0 / 5</div>
+
     <div class="score-dashboard">
         <div id="high-score-display">Personal Best: -- ms</div>
         <button id="reset-score-btn">Reset Record</button>
@@ -28,7 +79,6 @@
 
     <a href="../" class="home-backlink">← Return to HiiEyeLab Home</a>
 
-    <!-- Execute JavaScript logic safely downstream -->
     <script src="game.js"></script>
 </body>
 </html>
