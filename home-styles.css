@@ -1,0 +1,271 @@
+@import url('https://googleapis.com');
+
+/* Reset and Core Layout variables */
+html {
+    scroll-behavior: smooth;
+}
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.25rem;
+    line-height: 1.6;
+    background-color: #1f2221; /* Dark Spruce Slate */
+    color: #f4f1ea; /* Soft Antique Ecru */
+}
+
+/* Structural Container widths */
+.section-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 80px 24px;
+}
+
+h1, h2, h3 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    color: #dfcbb5; /* Muted Champagne Gold */
+    margin-top: 0;
+}
+
+/* Top Navigation Bar Styles */
+#main-header {
+    background-color: rgba(31, 34, 33, 0.95);
+    border-bottom: 1px solid #373d3a;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+}
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-style: italic;
+    color: #dfcbb5;
+    text-decoration: none;
+    letter-spacing: 0.5px;
+}
+#nav-menu {
+    display: flex;
+    gap: 30px;
+}
+.nav-link {
+    color: #cbd1ce;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: color 0.25s ease;
+}
+.nav-link:hover {
+    color: #dfcbb5;
+}
+
+/* Minimalist Statement Hero Section */
+#hero {
+    background-color: #161817; /* Soft Deep Velvet Charcoal */
+    padding: 120px 24px;
+    text-align: center;
+    border-bottom: 1px solid #272b29;
+}
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+#hero h1 {
+    font-size: 3.5rem;
+    font-style: italic;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+}
+.subtitle {
+    font-size: 1.5rem;
+    color: #cbd1ce;
+    margin-bottom: 15px;
+}
+.tagline {
+    font-size: 1.15rem;
+    font-style: italic;
+    color: #7d6b58; /* Soft Earth Terracotta Accent */
+    margin-bottom: 40px;
+}
+
+/* Premium Button Architecture */
+.cta-button {
+    display: inline-block;
+    padding: 14px 36px;
+    background-color: #7d6b58;
+    color: #f4f1ea;
+    text-decoration: none;
+    border-radius: 30px; /* Sweeping Art Nouveau curve */
+    font-weight: 600;
+    font-size: 1.05rem;
+    transition: background-color 0.25s, transform 0.2s;
+    border: 1px solid rgba(223, 203, 181, 0.2);
+}
+.cta-button:hover {
+    background-color: #8e7c69;
+    transform: translateY(-1px);
+}
+
+/* About Layout split grid arrangement */
+#about {
+    background-color: #272b29; /* Lightened Accent Charcoal */
+    border-bottom: 1px solid #373d3a;
+}
+.about-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 50px;
+    align-items: center;
+}
+#about h2 {
+    font-size: 2.2rem;
+    margin-bottom: 25px;
+}
+#about p {
+    color: #cbd1ce;
+    margin-bottom: 20px;
+}
+.luxury-link {
+    color: #dfcbb5;
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 1px solid #7d6b58;
+    transition: border-bottom 0.2s;
+}
+.luxury-link:hover {
+    border-bottom-color: #dfcbb5;
+}
+
+/* The Collaboration Card layout styling */
+.collab-card {
+    background-color: #1f2221;
+    padding: 35px;
+    border-radius: 16px;
+    border: 1px solid #373d3a;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+.collab-card h3 {
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+}
+.secondary-button {
+    display: block;
+    text-align: center;
+    padding: 12px;
+    background-color: transparent;
+    color: #dfcbb5;
+    border: 1px solid #7d6b58;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-top: 25px;
+    transition: all 0.25s ease;
+}
+.secondary-button:hover {
+    background-color: #7d6b58;
+    color: #f4f1ea;
+}
+
+/* Project Selection Grids */
+.center-title {
+    text-align: center;
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+}
+.section-subtext {
+    text-align: center;
+    color: #b2b8b5;
+    margin-bottom: 50px;
+    font-style: italic;
+}
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+}
+
+/* Individual Module Cards */
+.project-card {
+    position: relative;
+    background: #272b29;
+    border-radius: 14px;
+    border: 1px solid #373d3a;
+    padding: 40px 30px;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: flex;
+    flex-direction: column;
+}
+.project-card:not(.locked):hover {
+    transform: translateY(-4px);
+    border-color: #dfcbb5;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+}
+.card-badge {
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #7d6b58;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+.project-card h3 {
+    font-size: 1.6rem;
+    margin-bottom: 15px;
+}
+.project-card p {
+    color: #cbd1ce;
+    font-size: 1.15rem;
+    margin-bottom: 30px;
+    flex-grow: 1;
+}
+.card-status {
+    font-size: 0.95rem;
+    font-style: italic;
+    color: #b2b8b5;
+}
+/* Absolute invisible layer ensuring the card click handles redirection cleanly */
+.card-overlay-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+/* Greyed layout for locked upcoming features */
+.project-card.locked {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: #1c1f1e;
+}
+
+/* Minimalist Footer */
+#main-footer {
+    text-align: center;
+    padding: 40px 24px;
+    font-size: 1rem;
+    color: #616965;
+    background-color: #161817;
+    border-top: 1px solid #1f2221;
+}
+
+/* Mobile responsive adaptations */
+@media(max-width: 768px) {
+    .about-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    #hero h1 {
+        font-size: 2.6rem;
+    }
+}

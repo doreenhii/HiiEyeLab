@@ -1,0 +1,202 @@
+@import url('https://googleapis.com');
+
+body {
+    margin: 0;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.15rem;
+    background-color: #2c302e; /* Deep Sage/Olive Charcoal */
+    color: #f4f1ea; /* Soft Ecru / Antique White */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#game-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+#sidebar {
+    width: 340px;
+    background-color: #1f2221; /* Dark Matte Spruce */
+    padding: 25px;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.4);
+    z-index: 10;
+    overflow-y: auto;
+    border-right: 1px solid #3d4240;
+}
+
+h2 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    font-style: italic;
+    font-size: 1.8rem;
+    margin-top: 0;
+    color: #dfcbb5; /* Muted Gold / Warm Parchment */
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #4a524f;
+    padding-bottom: 10px;
+}
+
+h3 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    font-size: 1.25rem;
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #dfcbb5;
+}
+
+.control-group {
+    background: #272b29; /* Smooth Warm Charcoal */
+    padding: 18px;
+    margin-bottom: 20px;
+    border-radius: 12px; /* Soft organic Art Nouveau curves */
+    border: 1px solid #373d3a;
+}
+
+p.hint {
+    font-size: 0.95rem;
+    font-style: italic;
+    color: #b2b8b5;
+}
+
+label {
+    font-size: 1rem;
+    color: #cbd1ce;
+}
+
+select, input[type="color"], input[type="range"], button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 6px;
+    border: 1px solid #434a47;
+    background-color: #1f2221;
+    color: #f4f1ea;
+    font-family: inherit;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+select:focus, input:focus {
+    outline: 1px solid #dfcbb5;
+}
+
+button {
+    background-color: #7d6b58; /* Muted Earthy Terracotta/Taupe */
+    color: #f4f1ea;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.25s, transform 0.1s;
+}
+button:hover {
+    background-color: #8e7c69;
+}
+button:active {
+    transform: scale(0.98);
+}
+
+.btn-danger {
+    background-color: #8c4a4a; /* Dusty Madder Red */
+    margin-top: 10px;
+}
+.btn-danger:hover {
+    background-color: #9e5656;
+}
+
+#item-library {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+}
+
+#item-library img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
+    background: #1f2221;
+    padding: 6px;
+    border-radius: 8px;
+    border: 1px solid #373d3a;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+#item-library img:hover {
+    transform: translateY(-2px);
+    border-color: #dfcbb5;
+    background: #272b29;
+}
+
+#canvas-area {
+    position: relative;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #161817;
+    padding: 20px; /* Luxury margin cushion around the drawing board */
+    overflow: hidden;
+}
+
+#canvas-wrapper {
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    background-color: #ffffff;
+    border-radius: 4px;
+}
+
+#bg-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+#art-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.placed-item {
+    position: absolute;
+    cursor: move;
+    pointer-events: auto;
+    user-select: none;
+    outline: 2px dashed transparent;
+}
+.placed-item.selected {
+    outline-color: #dfcbb5;
+    box-shadow: 0 0 12px rgba(223, 203, 181, 0.3);
+}
+
+/* Composition Overlay Grid Structure */
+#grid-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Let user clicks pass cleanly through to items */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    z-index: 5;
+}
+.grid-cell {
+    border-right: 1px dashed rgba(125, 107, 88, 0.4);
+    border-bottom: 1px dashed rgba(125, 107, 88, 0.4);
+}
+/* Eliminate trailing outer boundaries */
+.grid-cell:nth-child(3n) { border-right: none; }
+.grid-cell:nth-child(n+7) { border-bottom: none; }
+
+.hidden { display: none !important; }

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HiiEyeLab — Eye Reflex Trainer</title>
+    <!-- Link to external typography and stylesheet layout -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <h1>Train Your Brain's Saccade Speed! 👁️⚡</h1>
+    <p>In science class, we learned trained athletes snap their gaze rapidly. Catch the shifting target eye to check your rapid eye reaction time!</p>
+
+    <div id="game-container">
+        <div id="target"></div>
+        <div id="screen-overlay">
+            <h2 id="msg">Ready to test your eyes?</h2>
+            <button id="start-btn">START TESTING</button>
+        </div>
+    </div>
+
+    <!-- Record Dashboard Panel Layout -->
+    <div class="score-dashboard">
+        <div id="high-score-display">Personal Best: -- ms</div>
+        <button id="reset-score-btn">Reset Record</button>
+    </div>
+
+    <a href="../" class="home-backlink">← Return to HiiEyeLab Home</a>
+
+    <!-- Execute JavaScript logic safely downstream -->
+    <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Composition Art Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Sidebar Controls -->
+        <div id="sidebar">
+            <h2>🎨 Composition Tool</h2>
+            
+            <div class="control-group">
+                <h3>1. Canvas Background</h3>
+                <label>Tool Mode:</label>
+                <select id="tool-mode">
+                    <option value="place-items">Place & Adjust Items</option>
+                    <option value="draw-partition">Draw Partition Line</option>
+                    <option value="fill-section">Fill Section Color</option>
+                </select>
+                <br><br>
+                <label>Pick Color:</label>
+                <input type="color" id="color-picker" value="#dfcbb5">
+                
+                <div style="display: flex; gap: 5px; margin-top: 12px;">
+                    <button id="undo-btn">↩️ Undo</button>
+                    <button id="redo-btn">↪️ Redo</button>
+                </div>
+                
+                <!-- Composition Helper Guide -->
+                <div style="margin-top: 15px; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="grid-toggle" style="width: auto; margin: 0;">
+                    <label for="grid-toggle" style="cursor: pointer; font-size: 1.05rem;">Show Rule of Thirds Grid</label>
+                </div>
+
+                <button id="clear-items-btn" style="background-color: #a67c52; margin-top: 15px;">🗑️ Clear Items Only</button>
+                <button id="clear-canvas" class="btn-danger">Reset Everything</button>
+            </div>
+
+            <div class="control-group">
+                <h3>2. Add Artwork Items</h3>
+                <p class="hint">Tap an item to place it, then choose it on canvas to edit properties.</p>
+                <div id="item-library">
+                    <!-- Images automatically populate here -->
+                </div>
+            </div>
+            
+            <!-- Item Customization Panel Engine -->
+            <div id="resize-control-box" class="control-group hidden">
+                <h3>3. Adjust Selected Item</h3>
+                
+                <label>Size:</label>
+                <input type="range" id="size-slider" min="30" max="400" value="150">
+                
+                <label style="margin-top: 10px; display: block;">Rotate Angle:</label>
+                <input type="range" id="rotate-slider" min="0" max="360" value="0">
+                
+                <label style="margin-top: 10px; display: block;">Opacity (Transparency):</label>
+                <input type="range" id="opacity-slider" min="10" max="100" value="100">
+                
+                <button id="mirror-btn" style="margin-top: 15px;">↔️ Mirror Flip</button>
+                
+                <!-- Arrangement Layers Shifter -->
+                <div style="display: flex; gap: 5px; margin-top: 8px;">
+                    <button id="layer-up-btn" style="background-color: #51685c;">🔼 Bring Forward</button>
+                    <button id="layer-down-btn" style="background-color: #51685c;">🔽 Send Backward</button>
+                </div>
+                
+                <button id="delete-item" class="btn-danger">Remove Item</button>
+            </div>
+
+            <div class="control-group">
+                <h3>4. Export Artwork</h3>
+                <button id="save-email-btn" style="background-color: #51685c;">💾 Save & Email PNG</button>
+            </div>
+        </div>
+
+        <!-- Dynamic canvas area (according to screen size) -->
+        <div id="canvas-area">
+            <div id="canvas-wrapper">
+                <canvas id="bg-canvas"></canvas>
+                <div id="art-canvas"></div>
+                
+                <div id="grid-overlay" class="hidden">
+                    <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                    <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                    <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
