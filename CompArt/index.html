@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abstract Away: Compositional Curves</title>
+    <link rel="stylesheet" href="compArt-styles.css">
+</head>
+<body>
+    <header>
+        <h1>Abstract Away</h1>
+        <p class="pitch">Use this tool to "abstract away" existing artwork. Start from the foundational compositional curves and structures, and use them as a stepping stone to create your own unique abstract masterpiece!</p>
+    </header>
+
+    <main id="app-container">
+        <!-- Phase 1: Structural Analysis -->
+        <section id="phase-1" class="active-phase">
+            <div class="instructions">
+                <h2>Step 1: Find the Bones</h2>
+                <p>Artists usually simplify an image into compositional curves and structural lines. What do you think are the main curves, lines, or structures that summarize this image? Draw them on the canvas. <em>Hint: do this carefully. What you produced here will be the permanent base for your next fun activity. Be as accurate and detailed as possible!</em></p>
+                <p>(Tip: Toggle the overlay to guide you)</p>
+            </div>
+
+            <div class="workspace">
+                <div class="reference-panel">
+                    <img id="reference-image" src="" alt="Reference Image">
+                    <button id="random-image-btn" class="primary-btn">🔀 Load Random Image</button>
+                    <button id="toggle-overlay-btn" class="secondary-btn">👁️ Toggle Guide Overlay</button>
+                </div>
+                
+                <div class="canvas-container" id="canvas-wrapper">
+                    <!-- Overlay image that matches the reference, toggled on/off -->
+                    <img id="guide-overlay" class="hidden" src="" alt="Guide Overlay">
+                    <canvas id="drawing-canvas"></canvas>
+                </div>
+            </div>
+
+            <div class="categories-panel">
+                <h3>Composition Categories</h3>
+                <p>Select all the compositional structures that apply to this image:</p>
+                <div id="category-grid" class="category-grid">
+                    <!-- Categories injected via JS -->
+                </div>
+            </div>
+
+            <button id="finish-phase1-btn" class="action-btn">✅ Yes, I am happy with these simplifying lines!</button>
+        </section>
+
+        <!-- Phase 2: Abstract Creation -->
+        <section id="phase-2" class="hidden-phase">
+            <div class="instructions">
+                <h2>Step 2: Abstract Creation</h2>
+                <p>Your foundational curves are now locked in as the base of your canvas. Build upon them! Use different colors, line thicknesses, and opacities to create your own abstract art.</p>
+            </div>
+
+            <div class="toolbar">
+                <div class="tool-group">
+                    <label>Color Palette:</label>
+                    <div id="color-palette"></div>
+                </div>
+                <div class="tool-group">
+                    <label for="size-slider">Line Thickness:</label>
+                    <input type="range" id="size-slider" min="1" max="50" value="5">
+                </div>
+                <div class="tool-group">
+                    <label for="opacity-slider">Brush Opacity:</label>
+                    <input type="range" id="opacity-slider" min="10" max="100" value="100">
+                </div>
+            </div>
+
+            <button id="send-email-btn" class="action-btn">📧 Export & Email My Masterpiece</button>
+        </section>
+    </main>
+
+    <script src="game.js"></script>
+</body>
+</html>

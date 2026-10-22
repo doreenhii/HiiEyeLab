@@ -8,17 +8,18 @@
 </head>
 <body>
 
-    <!-- Premium Navigation Menu Area -->
-    <header id="main-header">
-        <div class="header-container">
-            <a href="#" class="nav-logo">HiiEyeLab</a>
-            <nav id="nav-menu">
-                <a href="#about" class="nav-link">About</a>
-                <a href="#projects" class="nav-link">Explore Science</a>
-                <a href="#collaborate" class="nav-link">Collaborate</a>
-            </nav>
-        </div>
-    </header>
+    <!-- Placeholder where the header will load -->
+    <div id="header-placeholder"></div>
+
+    <!-- Script to fetch and insert the header -->
+    <script>
+        // Use an absolute path to the header file so child pages can find it
+        fetch('/HiiEyeLab/header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+            });
+    </script>
 
     <main>
         <!-- Hero Header Panel -->
@@ -37,7 +38,8 @@
                 <div class="about-grid">
                     <div class="about-text">
                         <h2>The Mind Behind the Lab</h2>
-                            <p>Welcome. I am Dr. Doreen Hii (Ph.D. in Cognitive Sciences). As a vision scientist and educator, I am passionate about breaking down complex concepts into intuitive, interactive experiences—inspiring the next generation of creative thinkers and keeping the public informed about scientific advancements.</p>
+                            <p>Welcome to HiiEyeLab (pronounced "Hi-aye" /haɪ-aɪ/). It is a play on my last name, and way to say hello to you! I would like to inviting you to explore the world of vision science. </p>
+                            <p> I am Dr. Doreen Hii (Ph.D. in Cognitive Sciences). As a vision scientist and educator, I am passionate about breaking down complex concepts into intuitive, interactive experiences—inspiring the next generation of creative thinkers and keeping the public informed about scientific advancements.</p>
                             
                             <!-- Research Hyperlink Vector -->
                             <p class="research-link-wrapper">
@@ -57,6 +59,20 @@
             </div>
         </section>
 
+        <section id="media">
+            <div class="section-container">
+                <h2 class="center-title">Media & Insights</h2>
+                <p class="section-subtext">Science is more fun with you involved.</p>
+                
+                <div class="content-card placeholder-card">
+                    <h3>Hii-Eye in the Media</h3>
+                    <p>This space features our curated collection of short educational videos, engaging media coverage, and inspirational talks.</p>
+                    <p>You will also find blog posts offering a behind-the-scenes look at the life of a vision scientist and deep dives into the mechanics of the human mind.</p>
+                    <a href="MediaHighlights/" class="secondary-button">Explore Media</a>
+                </div>
+            </div>
+        </section>
+
         <!-- Project & Custom Games Directories Grid -->
         <section id="projects">
             <div class="section-container">
@@ -69,15 +85,25 @@
                     <article class="project-card">
                         <div class="card-badge">Module 01</div>
                         <div class="card-body">
-                            <h3>The Art of Composition</h3>
-                            <p>A digital canvas where you can create your own artistic masterpiece. Do you know what drives your own aesthetic preferences?</p>
-                            <span class="card-status">Interactive Simulation • Active</span>
+                            <h3>Abstract Away</h3>
+                                <p>Discover the hidden structures behind existing artworks. Strip an image down to its foundational compositional curves, then use them as a stepping stone to craft your own unique abstract masterpiece!</p>
+                                <span class="card-status">Interactive Simulation • Active</span>
                         </div>
-                        <a href="CreateArt/" class="card-overlay-link" aria-label="Launch Composition Game"></a>
+                        <a href="CompArt/" class="card-overlay-link" aria-label="Launch Abstraction Game"></a>
                     </article>
 
                     <article class="project-card">
                         <div class="card-badge">Module 02</div>
+                        <div class="card-body">
+                            <h3>The Artist Freeland</h3>
+                            <p>A digital canvas where you can create your own artistic masterpiece. Do you know what drives your own aesthetic preferences?</p>
+                            <span class="card-status">Interactive Simulation • Active</span>
+                        </div>
+                        <a href="CreateArt/" class="card-overlay-link" aria-label="Launch Freeland"></a>
+                    </article>
+
+                    <article class="project-card">
+                        <div class="card-badge">Module 03</div>
                         <div class="card-body">
                             <h3>Cognitive Processing Speed Training</h3>
                             <p>How fast can you detect changes, and react to it? Dive into a fast-paced reflex game that measures your cognitive processing speeds from perception to recognition, decision, and action.</p>

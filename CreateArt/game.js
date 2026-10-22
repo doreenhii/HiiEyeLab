@@ -1,12 +1,13 @@
 // CONFIGURATION: Add your image filenames here!
-const itemImages = ['butterfly.png', 'leaf.png', 'star.png', 'mushroom.png'];
+const itemImages = ['artybeestudio-sun-hat-9551750_1920.png', 'billithecat-cypress-5364694_1920.png', 'cerisemuscate-milan-2409580_1920.png', 'clker-free-vector-images-boy-306170_1920.png', 'clker-free-vector-images-buildings-48852_1920.png', 'clker-free-vector-images-cabin-310330_1920.png', 'clker-free-vector-images-car-33633_1920.png', 'clker-free-vector-images-car-35263_1920.png', 'clker-free-vector-images-city-306873_1920.png', 'clker-free-vector-images-city-48851_1920.png', 'clker-free-vector-images-cloud-309024_1920.png', 'clker-free-vector-images-cloud-47582_1920.png', 'clker-free-vector-images-full-moon-308007_1920.png', 'clker-free-vector-images-girl-307915_1920.png', 'clker-free-vector-images-happy-312756_1920.png', 'clker-free-vector-images-mushroom-304246_1920.png', 'clker-free-vector-images-pine-304951_1920.png', 'clker-free-vector-images-skyscrapers-48853_1920.png', 'clker-free-vector-images-sun-312708_1920.png', 'clker-free-vector-images-yo-yo-312175_1920.png', 'creativecanvasdesign-adobo-10322103_1920.png', 'dandelion_tea-cherry-blossom-7081566_1920.png', 'darkmoon_art-frame-7331851_1920.png', 'dueg-oth-house-7833067_1920.png', 'dueg-oth-tree-7846968_1920.png', 'eommina-family-1976162_1920.png', 'gdj-ai-generated-8919324_1920.png', 'gdj-bavaria-4261244_1920.png', 'gdj-forest-6785128_1920.png', 'gdj-landscape-5207078_1920.png', 'gdj-trees-7912342_1920.png', 'jampole-sun-5379103_1920.png', 'kropekk_pl-the-sun-349394_1920.png', 'merio-boy-1299084_1920.png', 'milaoktasafitri-mountain-9746534_1920.png', 'milucernochova-little-girl-1443463_1920.png', 'myrandomarts-buildings-7425261_1920.png', 'openclipart-vectors-animals-2022610_1920.png', 'openclipart-vectors-bmw-158703_1920.png', 'openclipart-vectors-boy-1298788_1920.png', 'openclipart-vectors-boy-1300136_1920.png', 'openclipart-vectors-boy-1300621_1920.png', 'openclipart-vectors-boy-147797_1920.png', 'openclipart-vectors-building-1295569_1920.png', 'openclipart-vectors-building-1297154_1920.png', 'openclipart-vectors-car-158548_1920.png', 'openclipart-vectors-car-158795_1920.png', 'openclipart-vectors-chicken-159496_1920.png', 'openclipart-vectors-child-1299686_1920.png', 'openclipart-vectors-child-2025936_1920.png', 'openclipart-vectors-comic-2029764_1920.png', 'openclipart-vectors-house-1298848_1920.png', 'openclipart-vectors-leaves-155882_1920.png', 'openclipart-vectors-market-575842_1920.png', 'openclipart-vectors-moon-159383_1920.png', 'openclipart-vectors-neighbors-156089_1920.png', 'openclipart-vectors-palm-tree-1297489_1920.png', 'openclipart-vectors-passenger-car-155267_1920.png', 'openclipart-vectors-shop-150362_1920.png', 'openclipart-vectors-shop-158317_1920.png', 'openclipart-vectors-tree-576847_1920.png', 'paligraficas-father-and-son-7299684_1920.png', 'raphaeljeanneret-family-8493097_1920.png', 'resampled-house-3562064_1920.png', 'ricinator-supermarket-2011060_1920.png'];
+const colorPaletteHex = ['#000000', '#FFFFFF', '#dfcbb5', '#a67c52', '#51685c', '#D9534F', '#5BC0DE', '#F0AD4E', '#5CB85C', '#6f42c1'];
 
 const bgCanvas = document.getElementById('bg-canvas');
 const ctx = bgCanvas.getContext('2d');
 const artCanvas = document.getElementById('art-canvas');
 const canvasWrapper = document.getElementById('canvas-wrapper');
 const toolMode = document.getElementById('tool-mode');
-const colorPicker = document.getElementById('color-picker');
+const colorPaletteContainer = document.getElementById('color-palette');
 
 // Interface Selectors
 const sizeSlider = document.getElementById('size-slider');
@@ -24,14 +25,29 @@ let selectedElement = null;
 let isDrawing = false;
 let historyStack = [];
 let redoStack = [];
+let isFirstLoad = true;
+let activeColor = colorPaletteHex[2]; // Default color
+
+// Initialize Color Palette
+colorPaletteHex.forEach(hex => {
+    const swatch = document.createElement('div');
+    swatch.classList.add('color-swatch');
+    swatch.style.backgroundColor = hex;
+    if (hex === activeColor) swatch.classList.add('selected');
+    
+    swatch.addEventListener('pointerdown', () => {
+        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+        swatch.classList.add('selected');
+        activeColor = hex;
+    });
+    colorPaletteContainer.appendChild(swatch);
+});
 
 // Dynamic Canvas Auto-Scaling Resolution Engine
 function resizeCanvasToFitScreen() {
-    // 1. Check how much screen space is left next to the sidebar menu
     const areaWidth = document.getElementById('canvas-area').clientWidth - 40;
     const areaHeight = document.getElementById('canvas-area').clientHeight - 40;
     
-    // 2. Set an ideal luxury landscape layout ratio (4:3 aspect ratio)
     const targetRatio = 4 / 3;
     let width = areaWidth;
     let height = areaWidth / targetRatio;
@@ -41,33 +57,30 @@ function resizeCanvasToFitScreen() {
         width = areaHeight * targetRatio;
     }
     
-    // 3. Save existing canvas content state before adjusting sizes
     let tempImage = null;
-    if (bgCanvas.width > 0) {
+    if (bgCanvas.width > 0 && !isFirstLoad) {
         tempImage = ctx.getImageData(0, 0, bgCanvas.width, bgCanvas.height);
     }
     
-    // 4. Update responsive dimensions smoothly
     canvasWrapper.style.width = `${width}px`;
     canvasWrapper.style.height = `${height}px`;
     bgCanvas.width = width;
     bgCanvas.height = height;
     
-    // 5. Restore background drawings or fill with canvas white paint if fresh start
     if (tempImage) {
-        // Redraw content smoothly using an offscreen canvas to match resolution scaling
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = tempImage.width;
         tempCanvas.height = tempImage.height;
         tempCanvas.getContext('2d').putImageData(tempImage, 0, 0);
         ctx.drawImage(tempCanvas, 0, 0, width, height);
     } else {
+        // Fix for canvas not appearing on load
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+        isFirstLoad = false;
     }
 }
 
-// Run layout sizing on start and listen for tablet rotation flips
 window.addEventListener('resize', resizeCanvasToFitScreen);
 resizeCanvasToFitScreen();
 saveState();
@@ -82,25 +95,30 @@ itemImages.forEach(fileName => {
     const img = document.createElement('img');
     img.src = `items/${fileName}`;
     img.alt = fileName;
-    img.addEventListener('pointerdown', () => createPlacedItem(`items/${fileName}`));
+    
+    // We add 'e' (the event) so we can stop it from bubbling up and hiding the menu
+    img.addEventListener('pointerdown', (e) => {
+        e.stopPropagation(); 
+        createPlacedItem(`items/${fileName}`);
+    });
+    
     itemLibrary.appendChild(img);
 });
 
-// 2. Transformation Mechanics (Drag, Scale, Rotate, Z-Index)
+// 2. Transformation Mechanics
 function createPlacedItem(src) {
     const img = document.createElement('img');
     img.src = src;
     img.classList.add('placed-item');
     
-    // Center spawn points calculation based on current device screen size
     const currentW = bgCanvas.width;
     const currentH = bgCanvas.height;
     
-    img.style.width = `${Math.floor(currentW * 0.15)}px`; // Scales item default size to 15% of canvas width
+    img.style.width = `${Math.floor(currentW * 0.15)}px`; 
     img.style.left = `${Math.floor((currentW / 2) - (currentW * 0.075))}px`;
     img.style.top = `${Math.floor((currentH / 2) - (currentH * 0.075))}px`;
     img.style.zIndex = '10';
-    img.style.touchAction = 'none'; // Lock preventing touchscreen window drifting
+    img.style.touchAction = 'none'; 
     
     img.dataset.angle = "0";
     img.dataset.flipped = "false";
@@ -110,7 +128,6 @@ function createPlacedItem(src) {
     artCanvas.appendChild(img);
     selectItem(img);
 }
-
 
 function updateVisualTransforms(item) {
     const angle = item.dataset.angle;
@@ -126,7 +143,7 @@ function startDrag(e) {
     e.stopPropagation();
     selectItem(e.target);
     const item = e.target;
-    item.setPointerCapture(e.pointerId); // Forces unified lock on touch/tablet screens
+    item.setPointerCapture(e.pointerId); 
     
     let shiftX = e.clientX - item.getBoundingClientRect().left;
     let shiftY = e.clientY - item.getBoundingClientRect().top;
@@ -144,7 +161,6 @@ function startDrag(e) {
         let halfWidth = item.offsetWidth / 2;
         let halfHeight = item.offsetHeight / 2;
 
-        // Boundary Check: Keeps at least 50% of the element body visible safely inside borders
         item.style.left = Math.max(-halfWidth, Math.min(x, rect.width - halfWidth)) + 'px';
         item.style.top = Math.max(-halfHeight, Math.min(y, rect.height - halfHeight)) + 'px';
     }
@@ -220,7 +236,6 @@ document.getElementById('delete-item').addEventListener('pointerdown', () => {
     if (selectedElement) { selectedElement.remove(); selectItem(null); }
 });
 
-// Composition Overlay Checkbox Listener
 gridToggle.addEventListener('change', (e) => {
     if (e.target.checked) {
         gridOverlay.classList.remove('hidden');
@@ -228,7 +243,6 @@ gridToggle.addEventListener('change', (e) => {
         gridOverlay.classList.add('hidden');
     }
 });
-
 
 // 3. Drawing and Partition Vector Architecture
 bgCanvas.addEventListener('pointerdown', (e) => {
@@ -242,10 +256,10 @@ bgCanvas.addEventListener('pointerdown', (e) => {
         ctx.beginPath();
         ctx.moveTo(x, y);
         ctx.lineWidth = 4;
-        ctx.strokeStyle = '#000000';
+        ctx.strokeStyle = activeColor;
         ctx.lineCap = 'round';
     } else if (toolMode.value === 'fill-section') {
-        floodFill(x, y, colorPicker.value);
+        floodFill(x, y, activeColor);
         saveState();
     }
 });
@@ -264,7 +278,6 @@ bgCanvas.addEventListener('pointerup', () => {
     }
 });
 
-// Canvas Buffer Navigation Controllers (Undo / Redo Core)
 document.getElementById('undo-btn').addEventListener('pointerdown', () => {
     if (historyStack.length > 1) {
         redoStack.push(historyStack.pop());
@@ -293,9 +306,11 @@ function floodFill(startX, startY, fillColor) {
     const imageData = ctx.getImageData(0, 0, width, height);
     const data = imageData.data;
 
-    const r = parseInt(fillColor.slice(1, 3), 16);
-    const g = parseInt(fillColor.slice(3, 5), 16);
-    const b = parseInt(fillColor.slice(5, 7), 16);
+    // Convert active hex to RGB
+    const hex = fillColor.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
 
     const targetColor = getPixelColor(startX, startY);
     if (colorMatch(targetColor, [r, g, b, 255])) return;
@@ -326,11 +341,11 @@ function floodFill(startX, startY, fillColor) {
         data[idx] = r; data[idx+1] = g; data[idx+2] = b; data[idx+3] = 255;
     }
     function colorMatch(c1, c2) {
-        return Math.abs(c1 - c2) < 20 && Math.abs(c1 - c2) < 20 && Math.abs(c1 - c2) < 20;
+        return Math.abs(c1[0] - c2[0]) < 20 && Math.abs(c1[1] - c2[1]) < 20 && Math.abs(c1[2] - c2[2]) < 20;
     }
 }
 
-// 5. Canvas Compositor & Pure PNG Exporter
+// 5. Canvas Compositor & PNG Exporter
 document.getElementById('save-email-btn').addEventListener('pointerdown', () => {
     const exportCanvas = document.createElement('canvas');
     exportCanvas.width = bgCanvas.width;
@@ -347,67 +362,51 @@ document.getElementById('save-email-btn').addEventListener('pointerdown', () => 
         return (parseInt(a.style.zIndex) || 10) - (parseInt(b.style.zIndex) || 10);
     });
 
-    if (items.length === 0) {
-        processDownload(exportCanvas);
-        return;
-    }
-
-    let loadedCount = 0;
+    // Draw each item directly using the existing DOM element
     items.forEach(item => {
-        const img = new Image();
-        img.src = item.src;
-        img.onload = () => {
-            const w = item.offsetWidth;
-            const h = item.offsetHeight;
-            
-            const x = parseInt(item.style.left) + w / 2;
-            const y = parseInt(item.style.top) + h / 2;
-            
-            const angleRad = (parseInt(item.dataset.angle) * Math.PI) / 180;
-            const isFlipped = item.dataset.flipped === "true";
-            const alpha = parseInt(item.dataset.opacity) / 100;
+        const w = item.offsetWidth;
+        const h = item.offsetHeight;
+        
+        const x = parseInt(item.style.left) + w / 2;
+        const y = parseInt(item.style.top) + h / 2;
+        
+        const angleRad = (parseInt(item.dataset.angle) * Math.PI) / 180;
+        const isFlipped = item.dataset.flipped === "true";
+        const alpha = parseInt(item.dataset.opacity) / 100;
 
-            exportCtx.save();
-            
-            exportCtx.translate(x, y);
-            exportCtx.rotate(angleRad);
-            exportCtx.scale(isFlipped ? -1 : 1, 1);
-            exportCtx.globalAlpha = alpha;
-            
-            exportCtx.drawImage(img, -w / 2, -h / 2, w, h);
-            
-            exportCtx.restore();
-            
-            loadedCount++;
-            if (loadedCount === items.length) {
-                processDownload(exportCanvas);
-            }
-        };
+        exportCtx.save();
+        exportCtx.translate(x, y);
+        exportCtx.rotate(angleRad);
+        exportCtx.scale(isFlipped ? -1 : 1, 1);
+        exportCtx.globalAlpha = alpha;
+        
+        // Use 'item' directly instead of loading a new img
+        exportCtx.drawImage(item, -w / 2, -h / 2, w, h); 
+        exportCtx.restore();
     });
+
+    processDownload(exportCanvas);
 });
 
 function processDownload(canvas) {
-    // Outputs image data as high-quality transparent vector-retaining PNG formatting
+    const timestamp = Date.now();
     const dataUrl = canvas.toDataURL('image/png');
-    
     const downloadLink = document.createElement('a');
-    downloadLink.download = 'my-artwork.png';
+    downloadLink.download = `my-artwork${currentImageName.split('.')[0]}_${timestamp}.png`;
     downloadLink.href = dataUrl;
     downloadLink.click();
 
     const subject = encodeURIComponent("My Masterpiece!");
-    const body = encodeURIComponent("Check out my artwork! My image downloaded successfully as 'my-composition-artwork.png'!");
+    const body = encodeURIComponent("Check out my artwork!\n\nI created this piece via HiiEyeLab, an initiative where Dr. Hii breaks down human vision science in a fun and creative way. Want to explore the science of sight? \n\nVisit https://doreenhii.github.io/HiiEyeLab/ to learn more!");
     
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
 }
 
-// Clear Items Target Selector Hook
 document.getElementById('clear-items-btn').addEventListener('pointerdown', () => {
     artCanvas.innerHTML = ''; 
     selectItem(null);
 });
 
-// Full Master Reset Clear Engine
 document.getElementById('clear-canvas').addEventListener('pointerdown', () => {
     ctx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
     ctx.fillStyle = "#ffffff";

@@ -1,0 +1,206 @@
+:root {
+    --bg-color: #f4f4f9;
+    --panel-bg: #ffffff;
+    --primary: #4a90e2;
+    --secondary: #6c757d;
+    --accent: #2ecc71;
+    --text-main: #333333;
+    --border-radius: 8px;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header {
+    text-align: center;
+    max-width: 800px;
+    margin-bottom: 20px;
+}
+
+.pitch {
+    font-size: 1.1em;
+    color: var(--secondary);
+    line-height: 1.5;
+}
+
+#app-container {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.active-phase { display: block; }
+.hidden-phase { display: none; }
+
+.instructions {
+    background: var(--panel-bg);
+    padding: 15px 20px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.workspace {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.reference-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+    min-width: 300px;
+    max-width: 500px;
+}
+
+#reference-image {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: contain;
+    background: #e0e0e0;
+    border-radius: var(--border-radius);
+    border: 2px solid #ccc;
+}
+
+.canvas-container {
+    position: relative;
+    flex: 1;
+    min-width: 300px;
+    max-width: 500px;
+    aspect-ratio: 4/3;
+    border: 2px solid #333;
+    border-radius: var(--border-radius);
+    background: #fff;
+    overflow: hidden;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    cursor: crosshair;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+#guide-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0.3;
+    z-index: 20; /* Changed from 5 to 20 to sit on top of the canvas */
+    pointer-events: none;
+}
+
+.hidden { display: none !important; }
+
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 1em;
+}
+
+.primary-btn { background: var(--primary); color: white; }
+.primary-btn:hover { background: #357abd; }
+.secondary-btn { background: var(--secondary); color: white; }
+.secondary-btn:hover { background: #5a6268; }
+.action-btn { background: var(--accent); color: white; width: 100%; margin-top: 20px; font-size: 1.2em; padding: 15px;}
+.action-btn:hover { background: #27ae60; }
+
+.categories-panel {
+    background: var(--panel-bg);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-top: 20px;
+}
+
+.category-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.category-card {
+    border: 2px solid #ddd;
+    border-radius: var(--border-radius);
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    width: 120px;
+}
+
+.category-card img {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.category-card p {
+    margin: 10px 0 0 0;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.category-card.selected {
+    border-color: var(--primary);
+    background-color: #e6f2ff;
+}
+
+.toolbar {
+    display: flex;
+    gap: 20px;
+    background: var(--panel-bg);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.tool-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+#color-palette {
+    display: flex;
+    gap: 10px;
+}
+
+.color-swatch {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+.color-swatch.selected { border-color: #333; transform: scale(1.1); }

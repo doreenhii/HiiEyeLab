@@ -109,23 +109,42 @@ button:active {
     background-color: #9e5656;
 }
 
+#color-palette {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.color-swatch {
+    width: 100%;
+    aspect-ratio: 1/1;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    box-sizing: border-box;
+}
+.color-swatch.selected {
+    border: 2px solid #000;
+    transform: scale(1.1);
+}
 #item-library {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-top: 12px;
+    gap: 10px;
+    max-height: 180px; /* Forces the box to be scrollable */
+    overflow-y: auto;  /* Enables vertical scrolling */
+    padding-right: 5px; 
 }
-
 #item-library img {
     width: 100%;
-    aspect-ratio: 1;
+    height: auto;
     object-fit: contain;
-    background: #1f2221;
-    padding: 6px;
-    border-radius: 8px;
-    border: 1px solid #373d3a;
     cursor: pointer;
-    transition: all 0.2s ease-in-out;
+    background: rgba(0,0,0,0.05);
+    border-radius: 8px;
+    padding: 5px;
 }
 #item-library img:hover {
     transform: translateY(-2px);

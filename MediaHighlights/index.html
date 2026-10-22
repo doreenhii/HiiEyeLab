@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Highlights — HiiEyeLab</title>
+    <link rel="stylesheet" href="../home-styles.css">
+    <link rel="stylesheet" href="media-styles.css">
+</head>
+<body>
+
+    <!-- Placeholder where the header will load -->
+    <div id="header-placeholder"></div>
+
+    <!-- Script to fetch and insert the header -->
+    <script>
+        // Use an absolute path to the header file so child pages can find it
+        fetch('/HiiEyeLab/header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+            });
+    </script>
+
+    
+    <main>
+        <!-- Hero Header -->
+        <section id="hero">
+            <div class="hero-content">
+                <h1>Media & Insights</h1>
+                <!-- <p class="subtitle">Different Lenses. Deeper Stories. Exploring vision science through a different lens</p> -->
+                <p class="tagline">Videos, articles, and featured insights</p>
+            </div>
+        </section>
+
+        <!-- Videos Section -->
+        <section class="section-container">
+            <h2 class="center-title">Featured Videos</h2>
+            
+            <div class="media-grid">
+                <!-- Video 1 -->
+                <div class="video-card">
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/watch?v=pDwL0knamVs" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <h3>The 3D World We See Is "Fake" and We Want AI to See the Same</h3>
+                    <p>Despite the differences in individual brains, we all share a remarkably consistent 3D perception of the world. How can we build artificial intelligence (AI) models that achieve this level of shared perceptual experience?</p>
+                </div>
+
+                <!-- Video 2 -->
+                <div class="video-card">
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/watch?v=iWaemXneJb4" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <h3>Student Speaker, 2025 UCI PhD Hooding Ceremony</h3>
+                    <p>Never doubt that you plus your community can change the world; indeed, it’s the thing that already has.</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Press & Features Section -->
+        <section class="section-container">
+            <h2 class="center-title">Press</h2>
+            
+            <div class="project-grid">
+                <article class="project-card">
+                    <div class="card-badge">Media Feature</div>
+                    <div class="card-body">
+                        <h3>UCI Graduate Division News</h3>
+                        <p>Grad Hooding Q&A – Doreen Hii</p>
+                    </div>
+                </article>
+            </div>
+
+            
+            <div class="project-grid">
+                <article class="project-card">
+                    <div class="card-badge">Media Feature</div>
+                    <div class="card-body">
+                        <h3>UCI Social Sciences News</h3>
+                        <p>Shoutout – Doreen Hii</p>
+                    </div>
+                    <a href="https://www.socsci.uci.edu/newsevents/news/2025/2025-06-02-uci-soc-sci-shoutout-doreen-hii.php" class="card-overlay-link"></a>
+                </article>
+            </div>
+        </section>
+
+
+
+        <section class="section-container">
+            <h2 class="center-title">Social Media & Misc</h2>
+            
+            <div class="media-grid">
+
+                <div class="video-card">
+                    <!-- You can paste iframe embed codes from Instagram, Twitter, or LinkedIn here -->
+                    <div class="video-wrapper">
+                        <iframe src="https://x.com/UCIrvineGD/status/1934786918149181829" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+                    </div>
+                    <h3>X / Twitter</h3>
+                    <p>UCI Class of 2025</p>
+                </div>
+
+                <div class="video-card">
+                    <!-- You can paste iframe embed codes from Instagram, Twitter, or LinkedIn here -->
+                    <div class="video-wrapper">
+                        <iframe src="https://grad.uci.edu/2025/05/19/grad-hooding-qa-doreen-hii/" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+                    </div>
+                    <h3>Instagram Feature</h3>
+                    <p>UCI Social Science Student Spotlight</p>
+                </div>
+
+                <div class="video-card">
+                    <div class="video-wrapper">
+                        <iframe src="https://www.linkedin.com/posts/uc-irvine-graduate-division_grad-slam-finalist-doreen-hii-activity-7302741959985573888-QvHm" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+                    </div>
+                    <h3>LinkedIn Post</h3>
+                    <p>Meet the Grad Slam Finalist</p>
+                </div>
+
+
+                <div class="video-card">
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/watch?v=XJ0hEnnaabQ" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+                    </div>
+                    <h3>RoboPlay 2016 - Taro Cheese Pizza Café</h3>
+                    <p>Statewide RoboPlay Video Competition Winner: Most Interesting Task</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="main-footer">
+        <p>&copy; 2026 HiiEyeLab. Page designed with the help of AI. All content is human-generated.</p>
+    </footer>
+
+</body>
+</html>
