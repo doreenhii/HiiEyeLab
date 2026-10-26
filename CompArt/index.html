@@ -16,19 +16,35 @@
         <!-- Phase 1: Structural Analysis -->
         <section id="phase-1" class="active-phase">
             <div class="instructions">
-                <h2>Step 1: Find the Bones</h2>
+                <h2>Compositional Curves & Structural Lines</h2>
                 <p>Artists usually simplify an image into compositional curves and structural lines. What do you think are the main curves, lines, or structures that summarize this image? Draw them on the canvas. <em>Hint: do this carefully. What you produced here will be the permanent base for your next fun activity. Be as accurate and detailed as possible!</em></p>
                 <p>(Tip: Toggle the overlay to guide you)</p>
+            </div>
+
+            <!-- Phase 1 Canvas Controls -->
+            <div class="toolbar">
+                <div class="tool-group">
+                    <label>Line Thickness / Eraser Size:</label>
+                    <input type="range" id="p1-size-slider" min="0.5" max="50" step="0.5" value="3">
+                </div>
+                <div class="tool-group">
+                    <label>Brush Color:</label>
+                    <div id="p1-color-palette" class="color-palette-grid"></div>
+                </div>
+                <button id="p1-draw-btn" class="primary-btn active-tool">✏️ Freehand Draw</button>
+                <button id="p1-erase-btn" class="secondary-btn">🧹 Eraser</button>
+                <button id="p1-clear-btn" class="secondary-btn" style="background-color: #d9534f; color: white;">🗑️ Clear Canvas</button>
             </div>
 
             <div class="workspace">
                 <div class="reference-panel">
                     <img id="reference-image" src="" alt="Reference Image">
-                    <button id="random-image-btn" class="primary-btn">🔀 Load Random Image</button>
+                    <button id="random-image-btn" class="primary-btn">🔀 Use Another Image</button>
                     <button id="toggle-overlay-btn" class="secondary-btn">👁️ Toggle Guide Overlay</button>
                 </div>
                 
                 <div class="canvas-container" id="canvas-wrapper">
+                    <div id="eraser-cursor"></div>
                     <!-- Overlay image that matches the reference, toggled on/off -->
                     <img id="guide-overlay" class="hidden" src="" alt="Guide Overlay">
                     <canvas id="drawing-canvas"></canvas>
@@ -49,23 +65,26 @@
         <!-- Phase 2: Abstract Creation -->
         <section id="phase-2" class="hidden-phase">
             <div class="instructions">
-                <h2>Step 2: Abstract Creation</h2>
-                <p>Your foundational curves are now locked in as the base of your canvas. Build upon them! Use different colors, line thicknesses, and opacities to create your own abstract art.</p>
+                <h2>New Artwork Creation</h2>
+                <p>Your fundamental curves are now locked as the base of your canvas. Build upon them! Use different colors, line thicknesses, and opacities to create your own abstract art.</p>
             </div>
 
             <div class="toolbar">
                 <div class="tool-group">
                     <label>Color Palette:</label>
-                    <div id="color-palette"></div>
+                    <div id="color-palette" class="color-palette-grid"></div>
                 </div>
                 <div class="tool-group">
-                    <label for="size-slider">Line Thickness:</label>
-                    <input type="range" id="size-slider" min="1" max="50" value="5">
+                    <label for="size-slider">Line Thickness / Eraser Size:</label>
+                    <input type="range" id="size-slider" min="0.5" max="50" step="0.5" value="5">
                 </div>
                 <div class="tool-group">
                     <label for="opacity-slider">Brush Opacity:</label>
                     <input type="range" id="opacity-slider" min="10" max="100" value="100">
                 </div>
+                <button id="p2-draw-btn" class="primary-btn active-tool">✏️ Draw</button>
+                <button id="p2-erase-btn" class="secondary-btn">🧹 Eraser</button>
+                <button id="p2-restart-btn" class="secondary-btn" style="background-color: #f0ad4e; color: white;">🔄 Start Anew </button>
             </div>
 
             <button id="send-email-btn" class="action-btn">📧 Export & Email My Masterpiece</button>

@@ -1,12 +1,26 @@
 // CONFIGURATION: Add your image filenames here!
 const itemImages = ['artybeestudio-sun-hat-9551750_1920.png', 'billithecat-cypress-5364694_1920.png', 'cerisemuscate-milan-2409580_1920.png', 'clker-free-vector-images-boy-306170_1920.png', 'clker-free-vector-images-buildings-48852_1920.png', 'clker-free-vector-images-cabin-310330_1920.png', 'clker-free-vector-images-car-33633_1920.png', 'clker-free-vector-images-car-35263_1920.png', 'clker-free-vector-images-city-306873_1920.png', 'clker-free-vector-images-city-48851_1920.png', 'clker-free-vector-images-cloud-309024_1920.png', 'clker-free-vector-images-cloud-47582_1920.png', 'clker-free-vector-images-full-moon-308007_1920.png', 'clker-free-vector-images-girl-307915_1920.png', 'clker-free-vector-images-happy-312756_1920.png', 'clker-free-vector-images-mushroom-304246_1920.png', 'clker-free-vector-images-pine-304951_1920.png', 'clker-free-vector-images-skyscrapers-48853_1920.png', 'clker-free-vector-images-sun-312708_1920.png', 'clker-free-vector-images-yo-yo-312175_1920.png', 'creativecanvasdesign-adobo-10322103_1920.png', 'dandelion_tea-cherry-blossom-7081566_1920.png', 'darkmoon_art-frame-7331851_1920.png', 'dueg-oth-house-7833067_1920.png', 'dueg-oth-tree-7846968_1920.png', 'eommina-family-1976162_1920.png', 'gdj-ai-generated-8919324_1920.png', 'gdj-bavaria-4261244_1920.png', 'gdj-forest-6785128_1920.png', 'gdj-landscape-5207078_1920.png', 'gdj-trees-7912342_1920.png', 'jampole-sun-5379103_1920.png', 'kropekk_pl-the-sun-349394_1920.png', 'merio-boy-1299084_1920.png', 'milaoktasafitri-mountain-9746534_1920.png', 'milucernochova-little-girl-1443463_1920.png', 'myrandomarts-buildings-7425261_1920.png', 'openclipart-vectors-animals-2022610_1920.png', 'openclipart-vectors-bmw-158703_1920.png', 'openclipart-vectors-boy-1298788_1920.png', 'openclipart-vectors-boy-1300136_1920.png', 'openclipart-vectors-boy-1300621_1920.png', 'openclipart-vectors-boy-147797_1920.png', 'openclipart-vectors-building-1295569_1920.png', 'openclipart-vectors-building-1297154_1920.png', 'openclipart-vectors-car-158548_1920.png', 'openclipart-vectors-car-158795_1920.png', 'openclipart-vectors-chicken-159496_1920.png', 'openclipart-vectors-child-1299686_1920.png', 'openclipart-vectors-child-2025936_1920.png', 'openclipart-vectors-comic-2029764_1920.png', 'openclipart-vectors-house-1298848_1920.png', 'openclipart-vectors-leaves-155882_1920.png', 'openclipart-vectors-market-575842_1920.png', 'openclipart-vectors-moon-159383_1920.png', 'openclipart-vectors-neighbors-156089_1920.png', 'openclipart-vectors-palm-tree-1297489_1920.png', 'openclipart-vectors-passenger-car-155267_1920.png', 'openclipart-vectors-shop-150362_1920.png', 'openclipart-vectors-shop-158317_1920.png', 'openclipart-vectors-tree-576847_1920.png', 'paligraficas-father-and-son-7299684_1920.png', 'raphaeljeanneret-family-8493097_1920.png', 'resampled-house-3562064_1920.png', 'ricinator-supermarket-2011060_1920.png'];
-const colorPaletteHex = ['#000000', '#FFFFFF', '#dfcbb5', '#a67c52', '#51685c', '#D9534F', '#5BC0DE', '#F0AD4E', '#5CB85C', '#6f42c1'];
+
+// Colors (7 Hues: Red, Orange, Yellow, Green, Blue, Purple, Neutral)
+const colorPaletteHex = [
+    // Row 1 (Lightest / Pastels)
+    '#FDECEE', '#FDF0E6', '#FDF6E3', '#EAF2EB', '#EBF1F5', '#F2EBF4', '#FFFFFF',
+    // Row 2 (Soft / Tints)
+    '#F6C8CE', '#F7D2B6', '#F5E4A9', '#C7DCCB', '#C2D6E6', '#D9C5DE', '#D1D1D1',
+    // Row 3 (Mid-Tones / Base Hues)
+    '#E28A96', '#E69F6B', '#D9B758', '#8FB396', '#88A9C4', '#AD8EBA', '#9E9E9E',
+    // Row 4 (Deep / Shades)
+    '#B34B5A', '#B86330', '#A38329', '#547A5C', '#4B6F8C', '#7A5B87', '#595959',
+    // Row 5 (Darkest / Near Black)
+    '#591C25', '#5E2F12', '#52400F', '#234229', '#1D394F', '#3B2642', '#1A1A1A'
+];
 
 const bgCanvas = document.getElementById('bg-canvas');
 const ctx = bgCanvas.getContext('2d');
 const artCanvas = document.getElementById('art-canvas');
 const canvasWrapper = document.getElementById('canvas-wrapper');
 const toolMode = document.getElementById('tool-mode');
+const lineThickness = document.getElementById('line-thickness');
 const colorPaletteContainer = document.getElementById('color-palette');
 
 // Interface Selectors
@@ -26,7 +40,7 @@ let isDrawing = false;
 let historyStack = [];
 let redoStack = [];
 let isFirstLoad = true;
-let activeColor = colorPaletteHex[2]; // Default color
+let activeColor = colorPaletteHex[24]; // Default to a middle cream color
 
 // Initialize Color Palette
 colorPaletteHex.forEach(hex => {
@@ -74,7 +88,6 @@ function resizeCanvasToFitScreen() {
         tempCanvas.getContext('2d').putImageData(tempImage, 0, 0);
         ctx.drawImage(tempCanvas, 0, 0, width, height);
     } else {
-        // Fix for canvas not appearing on load
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
         isFirstLoad = false;
@@ -96,7 +109,6 @@ itemImages.forEach(fileName => {
     img.src = `items/${fileName}`;
     img.alt = fileName;
     
-    // We add 'e' (the event) so we can stop it from bubbling up and hiding the menu
     img.addEventListener('pointerdown', (e) => {
         e.stopPropagation(); 
         createPlacedItem(`items/${fileName}`);
@@ -139,7 +151,7 @@ function updateVisualTransforms(item) {
 }
 
 function startDrag(e) {
-    if (toolMode.value !== 'place-items') return;
+    // Automatically enters adjustment mode without requiring a dropdown change
     e.stopPropagation();
     selectItem(e.target);
     const item = e.target;
@@ -255,9 +267,11 @@ bgCanvas.addEventListener('pointerdown', (e) => {
         bgCanvas.setPointerCapture(e.pointerId);
         ctx.beginPath();
         ctx.moveTo(x, y);
-        ctx.lineWidth = 4;
+        // Updated line thickness from UI state
+        ctx.lineWidth = parseFloat(lineThickness.value);
         ctx.strokeStyle = activeColor;
         ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
     } else if (toolMode.value === 'fill-section') {
         floodFill(x, y, activeColor);
         saveState();
@@ -306,7 +320,6 @@ function floodFill(startX, startY, fillColor) {
     const imageData = ctx.getImageData(0, 0, width, height);
     const data = imageData.data;
 
-    // Convert active hex to RGB
     const hex = fillColor.replace('#', '');
     const r = parseInt(hex.substring(0, 2), 16);
     const g = parseInt(hex.substring(2, 4), 16);
@@ -352,17 +365,14 @@ document.getElementById('save-email-btn').addEventListener('pointerdown', () => 
     exportCanvas.height = bgCanvas.height;
     const exportCtx = exportCanvas.getContext('2d');
 
-    // Transfer background canvas paint data
     exportCtx.drawImage(bgCanvas, 0, 0);
 
     const items = Array.from(document.querySelectorAll('.placed-item'));
 
-    // SORT BY LAYER ORDER Z-INDEX DEPTH BEFORE RENDERING FLATTENED PNG
     items.sort((a, b) => {
         return (parseInt(a.style.zIndex) || 10) - (parseInt(b.style.zIndex) || 10);
     });
 
-    // Draw each item directly using the existing DOM element
     items.forEach(item => {
         const w = item.offsetWidth;
         const h = item.offsetHeight;
@@ -380,7 +390,6 @@ document.getElementById('save-email-btn').addEventListener('pointerdown', () => 
         exportCtx.scale(isFlipped ? -1 : 1, 1);
         exportCtx.globalAlpha = alpha;
         
-        // Use 'item' directly instead of loading a new img
         exportCtx.drawImage(item, -w / 2, -h / 2, w, h); 
         exportCtx.restore();
     });
@@ -392,7 +401,7 @@ function processDownload(canvas) {
     const timestamp = Date.now();
     const dataUrl = canvas.toDataURL('image/png');
     const downloadLink = document.createElement('a');
-    downloadLink.download = `my-artwork${currentImageName.split('.')[0]}_${timestamp}.png`;
+    downloadLink.download = `my-artwork_${timestamp}.png`;
     downloadLink.href = dataUrl;
     downloadLink.click();
 
