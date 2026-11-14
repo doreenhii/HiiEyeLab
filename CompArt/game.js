@@ -5,7 +5,7 @@ const referenceImages = [
 
 // CONFIGURATION: Add your composition category filenames here (saved in composition_cat/)
 const compositionCategories = [
-    'center.png', 'horizontal.png', 'triangle.png' 
+    'center.png', 'diagonal.png', 'triangular.png', 'c-curve.png', 'circle.png', 'converging.png', 's-curve.png', 'grid-pattern.png', 'scatter.png' 
 ];
 
 // Harmonized Palette (7 columns x 5 rows: Light to Dark)
@@ -256,32 +256,44 @@ p1ClearBtn.addEventListener('click', () => {
 });
 
 // 6. Phase Transition & Layer Lock Setup
-document.getElementById('finish-phase1-btn').addEventListener('click', () => {
+document.getElementById('finish-phase1-btn').addEventListener('click', async () => {
     const selectedCards = document.querySelectorAll('.category-card.selected p');
     const selectedCategories = Array.from(selectedCards).map(p => p.innerText);
     const timestamp = Date.now();
     const baseFilename = currentImageName.split('.')[0];
 
-    // Local Tracking Downloads
+    // Local Tracking Downloads via ZIP (iPad friendly single download)
     try {
-        const dataUrl = canvas.toDataURL('image/png');
-        const imgDownloadLink = document.createElement('a');
-        imgDownloadLink.download = `structural_bones_${baseFilename}_${timestamp}.png`;
-        imgDownloadLink.href = dataUrl;
-        imgDownloadLink.click();
+        if (typeof JSZip !== 'undefined') {
+            const zip = new JSZip();
 
-        const trackingData = {
-            image: currentImageName,
-            timestamp: timestamp,
-            categories: selectedCategories
-        };
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(trackingData, null, 2));
-        const jsonDownloadLink = document.createElement('a');
-        jsonDownloadLink.download = `tracking_data_${baseFilename}_${timestamp}.json`;
-        jsonDownloadLink.href = dataStr;
-        jsonDownloadLink.click();
+            // 1. Prepare and add PNG Image to ZIP
+            const dataUrl = canvas.toDataURL('image/png');
+            const base64Data = dataUrl.split(',')[1]; // JSZip needs just the base64 string
+            zip.file(`structural_bones_${baseFilename}_${timestamp}.png`, base64Data, {base64: true});
+
+            // 2. Prepare and add JSON Data to ZIP
+            const trackingData = {
+                image: currentImageName,
+                timestamp: timestamp,
+                categories: selectedCategories
+            };
+            zip.file(`tracking_data_${baseFilename}_${timestamp}.json`, JSON.stringify(trackingData, null, 2));
+
+            // 3. Generate ZIP and trigger a single download
+            const content = await zip.generateAsync({type: "blob"});
+            const zipDownloadLink = document.createElement('a');
+            zipDownloadLink.download = `phase1_data_${baseFilename}_${timestamp}.zip`;
+            zipDownloadLink.href = URL.createObjectURL(content);
+            zipDownloadLink.click();
+            
+            // Cleanup memory
+            setTimeout(() => URL.revokeObjectURL(zipDownloadLink.href), 100);
+        } else {
+            console.warn("JSZip library not found. Please add the script tag to your HTML.");
+        }
     } catch(e) {
-        console.warn("Silent download blocked by local file rules, proceeding to Phase 2.");
+        console.warn("Zip download failed or was blocked:", e);
     }
 
     // Hide guide overlay
