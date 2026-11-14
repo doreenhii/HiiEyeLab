@@ -325,37 +325,57 @@ function floodFill(startX, startY, fillColor) {
     const g = parseInt(hex.substring(2, 4), 16);
     const b = parseInt(hex.substring(4, 6), 16);
 
-    const targetColor = getPixelColor(startX, startY);
-    if (colorMatch(targetColor, [r, g, b, 255])) return;
-
-    const queue = [[startX, startY]];
-
-    while (queue.length > 0) {
-        const [cx, cy] = queue.shift();
-        const currentColor = getPixelColor(cx, cy);
-
-        if (colorMatch(currentColor, targetColor)) {
-            setPixelColor(cx, cy, r, g, b);
-            
-            if (cx > 0) queue.push([cx - 1, cy]);
-            if (cx < width - 1) queue.push([cx + 1, cy]);
-            if (cy > 0) queue.push([cx, cy - 1]);
-            if (cy < height - 1) queue.push([cx, cy + 1]);
-        }
-    }
-    ctx.putImageData(imageData, 0, 0);
-
     function getPixelColor(x, y) {
         const idx = (y * width + x) * 4;
         return [data[idx], data[idx+1], data[idx+2], data[idx+3]];
     }
+
     function setPixelColor(x, y, r, g, b) {
         const idx = (y * width + x) * 4;
         data[idx] = r; data[idx+1] = g; data[idx+2] = b; data[idx+3] = 255;
     }
+
     function colorMatch(c1, c2) {
         return Math.abs(c1[0] - c2[0]) < 20 && Math.abs(c1[1] - c2[1]) < 20 && Math.abs(c1[2] - c2[2]) < 20;
     }
+
+    const targetColor = getPixelColor(startX, startY);
+    
+    // Prevent infinite loops if trying to fill with the exact same color
+    if (colorMatch(targetColor, [r, g, b, 255])) return;
+
+    // Immediately set the origin pixel to prevent duplicate checking
+    setPixelColor(startX, startY, r, g, b);
+    
+    // Use an Array Stack instead of Queue for massive performance boost
+    const stack = [[startX, startY]];
+
+    while (stack.length > 0) {
+        const [cx, cy] = stack.pop();
+
+        // Check Left
+        if (cx > 0 && colorMatch(getPixelColor(cx - 1, cy), targetColor)) {
+            setPixelColor(cx - 1, cy, r, g, b);
+            stack.push([cx - 1, cy]);
+        }
+        // Check Right
+        if (cx < width - 1 && colorMatch(getPixelColor(cx + 1, cy), targetColor)) {
+            setPixelColor(cx + 1, cy, r, g, b);
+            stack.push([cx + 1, cy]);
+        }
+        // Check Up
+        if (cy > 0 && colorMatch(getPixelColor(cx, cy - 1), targetColor)) {
+            setPixelColor(cx, cy - 1, r, g, b);
+            stack.push([cx, cy - 1]);
+        }
+        // Check Down
+        if (cy < height - 1 && colorMatch(getPixelColor(cx, cy + 1), targetColor)) {
+            setPixelColor(cx, cy + 1, r, g, b);
+            stack.push([cx, cy + 1]);
+        }
+    }
+    
+    ctx.putImageData(imageData, 0, 0);
 }
 
 // 5. Canvas Compositor & PNG Exporter
@@ -399,16 +419,36 @@ document.getElementById('save-email-btn').addEventListener('pointerdown', () => 
 
 function processDownload(canvas) {
     const timestamp = Date.now();
-    const dataUrl = canvas.toDataURL('image/png');
-    const downloadLink = document.createElement('a');
-    downloadLink.download = `my-artwork_${timestamp}.png`;
-    downloadLink.href = dataUrl;
-    downloadLink.click();
-
-    const subject = encodeURIComponent("My Masterpiece!");
-    const body = encodeURIComponent("Check out my artwork!\n\nI created this piece via HiiEyeLab, an initiative where Dr. Hii breaks down human vision science in a fun and creative way. Want to explore the science of sight? \n\nVisit https://doreenhii.github.io/HiiEyeLab/ to learn more!");
     
-    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    // Convert canvas to a Blob (Real file object, much more stable on iOS)
+    canvas.toBlob((blob) => {
+        if (!blob) {
+            console.error("Canvas to Blob failed.");
+            return;
+        }
+
+        const blobUrl = URL.createObjectURL(blob);
+        const downloadLink = document.createElement('a');
+        downloadLink.download = `HEL_createArt_${timestamp}.png`;
+        downloadLink.href = blobUrl;
+        
+        // Trigger the download
+        document.body.appendChild(downloadLink); // Required for some iOS versions
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+
+        // Clean up the blob memory
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 200);
+
+        // DELAY the email trigger so the download isn't cancelled by the app switch
+        setTimeout(() => {
+            const subject = encodeURIComponent("My Masterpiece!");
+            const body = encodeURIComponent("Check out my artwork!\n\nI created this piece via HiiEyeLab, an initiative where Dr. Hii breaks down human vision science in a fun and creative way. Want to explore the science of sight? \n\nVisit https://doreenhii.github.io/HiiEyeLab/ to learn more!");
+            
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        }, 800); // 800 millisecond delay gives Safari time to save the file
+        
+    }, 'image/png');
 }
 
 document.getElementById('clear-items-btn').addEventListener('pointerdown', () => {
