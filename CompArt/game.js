@@ -506,6 +506,7 @@ document.getElementById('send-email-btn').addEventListener('click', () => {
         exportCanvas.toBlob((blob) => {
             if (!blob) return;
 
+            // --- DOWNLOAD 1: PNG IMAGE ---
             const blobUrl = URL.createObjectURL(blob);
             const downloadLink = document.createElement('a');
             downloadLink.download = `HEL_CompArt-${timestamp}.png`;
@@ -517,32 +518,34 @@ document.getElementById('send-email-btn').addEventListener('click', () => {
 
             setTimeout(() => URL.revokeObjectURL(blobUrl), 200);
 
-            setTimeout(() => {
-                const userEmail = document.getElementById('user-email-input').value.trim();
-                if (userEmail) {
-                    // 1. Create a text file containing the email address
-                    const textContent = `User Email: ${userEmail}\nTimestamp: ${new Date().toLocaleString()}`;
-                    const textBlob = new Blob([textContent], { type: 'text/plain' });
-                    const textUrl = URL.createObjectURL(textBlob);
-                    
-                    // 2. Trigger the download for the text file
-                    const textLink = document.createElement('a');
-                    textLink.download = `User-Email-${timestamp}.txt`;
-                    textLink.href = textUrl;
-                    
-                    document.body.appendChild(textLink);
-                    textLink.click();
-                    document.body.removeChild(textLink);
-                    
-                    // Clean up the URL
-                    setTimeout(() => URL.revokeObjectURL(textUrl), 200);
+            // --- DOWNLOAD 2: TEXT FILE (No setTimeout delay!) ---
+            const userEmail = document.getElementById('user-email-input').value.trim();
+            if (userEmail) {
+                const textContent = `User Email: ${userEmail}\nTimestamp: ${new Date().toLocaleString()}`;
+                const textBlob = new Blob([textContent], { type: 'text/plain' });
+                const textUrl = URL.createObjectURL(textBlob);
+                
+                const textLink = document.createElement('a');
+                textLink.download = `User-Email-${timestamp}.txt`;
+                textLink.href = textUrl;
+                
+                document.body.appendChild(textLink);
+                textLink.click();
+                document.body.removeChild(textLink);
+                
+                setTimeout(() => URL.revokeObjectURL(textUrl), 200);
 
-                    alert(`Your masterpiece has been downloaded! 🎨\n\nWe also saved the email address (${userEmail}) in a separate text file download.`);
+                // Delay ONLY the alert so it doesn't pause the browser before downloads start
+                setTimeout(() => {
+                    alert(`Your masterpiece has been downloaded! 🎨\n\nWe also saved the email address (${userEmail}) in a separate text file.`);
                     document.getElementById('user-email-input').value = ''; 
-                } else {
+                }, 100);
+            } else {
+                setTimeout(() => {
                     alert("Your masterpiece has been downloaded! 🎨");
-                }
-            }, 800);            
+                }, 100);
+            }
+            
         }, 'image/png');
         
     } catch (error) {
