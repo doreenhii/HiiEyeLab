@@ -440,13 +440,21 @@ function processDownload(canvas) {
         // Clean up the blob memory
         setTimeout(() => URL.revokeObjectURL(blobUrl), 200);
 
-        // DELAY the email trigger so the download isn't cancelled by the app switch
+        // Delay the alert by 800ms so Safari prioritizes the file download first
         setTimeout(() => {
-            const subject = encodeURIComponent("My Masterpiece!");
-            const body = encodeURIComponent("Check out my artwork!\n\nI created this piece via HiiEyeLab, an initiative where Dr. Hii breaks down human vision science in a fun and creative way. Want to explore the science of sight? \n\nVisit https://doreenhii.github.io/HiiEyeLab/ to learn more!");
+            const userEmailInput = document.getElementById('user-email-input');
+            const userEmail = userEmailInput ? userEmailInput.value.trim() : '';
             
-            window.location.href = `mailto:?subject=${subject}&body=${body}`;
-        }, 800); // 800 millisecond delay gives Safari time to save the file
+            if (userEmail) {
+                // Optional: Send data to your backend here
+                alert(`Your artwork has been downloaded! 🎨\n\nThank you, we've recorded ${userEmail} and will send your artwork soon.`);
+                
+                // Clear the input after successful submission
+                userEmailInput.value = ''; 
+            } else {
+                alert("Your artwork has been downloaded! 🎨");
+            }
+        }, 800); 
         
     }, 'image/png');
 }

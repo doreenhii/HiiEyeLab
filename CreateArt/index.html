@@ -114,10 +114,14 @@
 
             <div class="control-group">
                 <h3>Export Artwork</h3>
-                <button id="save-email-btn" style="background-color: #51685c;">💾 Save & Email PNG</button>
+                <label for="user-email-input" style="font-weight: bold; display: block; margin-bottom: 5px;">Where should we send this?</label>
+                <p style="font-size: 0.85em; color: #555; margin-top: 0; margin-bottom: 10px;">Enter your email to receive a copy later, and download it to your device right now!</p>
+                
+                <input type="email" id="user-email-input" placeholder="your.email@example.com" style="width: 100%; box-sizing: border-box; padding: 8px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ccc;">
+                
+                <button id="save-email-btn" style="background-color: #51685c; width: 100%;">💾 Download & Submit</button>
             </div>
-        </div>
-
+            
         <!-- Dynamic canvas area -->
         <div id="canvas-area">
             <div id="canvas-wrapper">
