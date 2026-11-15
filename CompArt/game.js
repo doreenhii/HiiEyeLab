@@ -3,12 +3,17 @@ const referenceImages = [
     'arweltatty-daisy-10294239.jpg', 'k_michels-malaysia-10445550.jpg', 'leeyen56-woman-7475383.jpg', 'raniramli-road-7735559.jpg', 'daniel64-asian-3565277.jpg'
 ];
 
-// CONFIGURATION: Add your composition category filenames here (saved in composition_cat/)
+// CONFIGURATION: Add your composition category filenames here
 const compositionCategories = [
     'center.png', 'diagonal.png', 'triangular.png', 'c-curve.png', 'circle.png', 'converging.png', 's-curve.png', 'grid-pattern.png', 'scatter.png' 
 ];
 
-// Harmonized Palette (7 columns x 5 rows: Light to Dark)
+// CONFIGURATION: Add your createArt element/sticker filenames here
+const createArtElements = [
+    'element1.png', 'element2.png', 'element3.png' // REPLACE WITH YOUR ACTUAL ASSET NAMES
+];
+
+// Harmonized Palette
 const colorPaletteHex = [
     '#FADBD8', '#FDEBD0', '#FCF3CF', '#D5F5E3', '#D6EAF8', '#EBDEF0', '#FFFFFF',
     '#F1948A', '#F8C471', '#F7DC6F', '#82E0AA', '#85C1E9', '#C39BD3', '#D5D8DC',
@@ -27,6 +32,10 @@ const canvas = document.getElementById('drawing-canvas');
 const ctx = canvas.getContext('2d');
 const wrapper = document.getElementById('canvas-wrapper');
 const eraserCursor = document.getElementById('eraser-cursor');
+
+// Ensure wrapper can hold absolute stickers correctly
+wrapper.style.position = 'relative';
+wrapper.style.overflow = 'hidden';
 
 // Phase 2 Top Overlay Drawing Canvas
 let phase2Canvas = null;
@@ -85,7 +94,7 @@ initCanvas();
 function loadRandomImage() {
     const randomFile = referenceImages[Math.floor(Math.random() * referenceImages.length)];
     currentImageName = randomFile;
-    const path = `images/${randomFile}`;
+    const path = `items/${randomFile}`;
     refImageEl.src = path;
     overlayImageEl.src = path;
 }
@@ -114,6 +123,21 @@ compositionCategories.forEach(fileName => {
     });
     categoryGrid.appendChild(card);
 });
+
+// 4. Setup Elements Grid (createArt merge)
+function initCreateArtElements() {
+    const grid = document.getElementById('p2-elements-grid');
+    if(!grid) return;
+    createArtElements.forEach(src => {
+        const img = document.createElement('img');
+        img.src = `images/${src}`;
+        img.className = 'asset-thumbnail';
+        img.title = "Click to add to canvas";
+        img.addEventListener('click', () => addStickerToCanvas(`images/${src}`));
+        grid.appendChild(img);
+    });
+}
+initCreateArtElements();
 
 // Populate 7x5 Palette Grids
 function setupPalettes() {
@@ -202,7 +226,6 @@ function draw(e) {
     targetCtx.lineJoin = 'round';
     
     if (currentTool === 'erase') {
-        // Phase 2 erasing ONLY removes top layer drawings (Phase 1 base is untouchable)
         targetCtx.globalCompositeOperation = 'destination-out';
         targetCtx.strokeStyle = 'rgba(0,0,0,1)';
     } else {
@@ -225,7 +248,6 @@ function draw(e) {
     targetCtx.moveTo(x, y);
 }
 
-// Bind events dynamically
 function bindCanvasEvents(target) {
     target.addEventListener('pointerdown', startPosition);
     target.addEventListener('pointerup', endPosition);
@@ -248,12 +270,126 @@ p1EraseBtn.addEventListener('click', () => { currentTool = 'erase'; updateToolBu
 if (p2DrawBtn) p2DrawBtn.addEventListener('click', () => { currentTool = 'draw'; updateToolButtons(); });
 if (p2EraseBtn) p2EraseBtn.addEventListener('click', () => { currentTool = 'erase'; updateToolButtons(); });
 
-// Clear Phase 1 Canvas
 p1ClearBtn.addEventListener('click', () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 });
+
+
+// 5. STICKER LOGIC (CREATE-ART MERGE)
+let activeSticker = null;
+let stickerDragState = {
+    isDragging: false,
+    isTransforming: false,
+    startX: 0, startY: 0,
+    startState: null,
+    center: {x:0, y:0}
+};
+
+function addStickerToCanvas(src) {
+    const sticker = document.createElement('div');
+    sticker.className = 'canvas-sticker';
+    
+    // Spawn center of canvas
+    let state = { x: wrapper.clientWidth / 2, y: wrapper.clientHeight / 2, scale: 1, angle: 0 };
+    sticker.style.left = '0px'; 
+    sticker.style.top = '0px';
+    sticker.dataset.state = JSON.stringify(state);
+
+    const img = document.createElement('img');
+    img.src = src;
+    img.onload = () => {
+        let displayW = img.naturalWidth;
+        let displayH = img.naturalHeight;
+        if(displayW > 150) {
+            displayH = (150 / displayW) * displayH;
+            displayW = 150;
+        }
+        sticker.style.width = `${displayW}px`;
+        sticker.style.height = `${displayH}px`;
+        updateStickerTransform(sticker, state);
+    };
+
+    const handle = document.createElement('div');
+    handle.className = 'sticker-handle';
+    
+    sticker.appendChild(img);
+    sticker.appendChild(handle);
+    wrapper.appendChild(sticker);
+
+    // Double tap/click to delete
+    let lastTap = 0;
+    sticker.addEventListener('pointerdown', (e) => {
+        const currentTime = new Date().getTime();
+        if (currentTime - lastTap < 300 && currentTime - lastTap > 0) {
+            sticker.remove(); // Delete sticker
+            e.preventDefault();
+            return;
+        }
+        lastTap = currentTime;
+
+        if (e.target === handle) return;
+        activeSticker = sticker;
+        stickerDragState.isDragging = true;
+        stickerDragState.startX = e.clientX;
+        stickerDragState.startY = e.clientY;
+        stickerDragState.startState = JSON.parse(sticker.dataset.state);
+        document.querySelectorAll('.canvas-sticker').forEach(s => s.style.zIndex = 30);
+        sticker.style.zIndex = 40; // Bring to front
+        e.stopPropagation(); // Prevent drawing line
+    });
+
+    handle.addEventListener('pointerdown', (e) => {
+        activeSticker = sticker;
+        stickerDragState.isTransforming = true;
+        const rect = sticker.getBoundingClientRect();
+        stickerDragState.center = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+        stickerDragState.startX = e.clientX;
+        stickerDragState.startY = e.clientY;
+        stickerDragState.startState = JSON.parse(sticker.dataset.state);
+        stickerDragState.startState.startDist = Math.hypot(e.clientX - stickerDragState.center.x, e.clientY - stickerDragState.center.y);
+        stickerDragState.startState.startAngle = Math.atan2(e.clientY - stickerDragState.center.y, e.clientX - stickerDragState.center.x);
+        document.querySelectorAll('.canvas-sticker').forEach(s => s.style.zIndex = 30);
+        sticker.style.zIndex = 40; 
+        e.stopPropagation(); 
+        e.preventDefault();
+    });
+}
+
+function updateStickerTransform(el, state) {
+    el.style.transform = `translate(${state.x}px, ${state.y}px) translate(-50%, -50%) rotate(${state.angle}rad) scale(${state.scale})`;
+}
+
+// Global Drag Handlers for Stickers
+window.addEventListener('pointermove', (e) => {
+    if (!activeSticker) return;
+    const state = JSON.parse(activeSticker.dataset.state);
+    
+    if (stickerDragState.isDragging) {
+        const dx = e.clientX - stickerDragState.startX;
+        const dy = e.clientY - stickerDragState.startY;
+        state.x = stickerDragState.startState.x + dx;
+        state.y = stickerDragState.startState.y + dy;
+        updateStickerTransform(activeSticker, state);
+        activeSticker.dataset.state = JSON.stringify(state);
+    } 
+    else if (stickerDragState.isTransforming) {
+        const currentDist = Math.hypot(e.clientX - stickerDragState.center.x, e.clientY - stickerDragState.center.y);
+        const currentAngle = Math.atan2(e.clientY - stickerDragState.center.y, e.clientX - stickerDragState.center.x);
+        state.scale = stickerDragState.startState.scale * (currentDist / stickerDragState.startState.startDist);
+        state.angle = stickerDragState.startState.angle + (currentAngle - stickerDragState.startState.startAngle);
+        updateStickerTransform(activeSticker, state);
+        activeSticker.dataset.state = JSON.stringify(state);
+    }
+});
+
+window.addEventListener('pointerup', () => {
+    activeSticker = null;
+    stickerDragState.isDragging = false;
+    stickerDragState.isTransforming = false;
+});
+
 
 // 6. Phase Transition & Layer Lock Setup
 document.getElementById('finish-phase1-btn').addEventListener('click', async () => {
@@ -262,17 +398,14 @@ document.getElementById('finish-phase1-btn').addEventListener('click', async () 
     const timestamp = Date.now();
     const baseFilename = currentImageName.split('.')[0];
 
-    // Local Tracking Downloads via ZIP (iPad friendly single download)
+    // Local Tracking Downloads via ZIP
     try {
         if (typeof JSZip !== 'undefined') {
             const zip = new JSZip();
-
-            // 1. Prepare and add PNG Image to ZIP
             const dataUrl = canvas.toDataURL('image/png');
-            const base64Data = dataUrl.split(',')[1]; // JSZip needs just the base64 string
+            const base64Data = dataUrl.split(',')[1]; 
             zip.file(`structural_bones_${baseFilename}_${timestamp}.png`, base64Data, {base64: true});
 
-            // 2. Prepare and add JSON Data to ZIP
             const trackingData = {
                 image: currentImageName,
                 timestamp: timestamp,
@@ -280,17 +413,15 @@ document.getElementById('finish-phase1-btn').addEventListener('click', async () 
             };
             zip.file(`tracking_data_${baseFilename}_${timestamp}.json`, JSON.stringify(trackingData, null, 2));
 
-            // 3. Generate ZIP and trigger a single download
             const content = await zip.generateAsync({type: "blob"});
             const zipDownloadLink = document.createElement('a');
             zipDownloadLink.download = `phase1_data_${baseFilename}_${timestamp}.zip`;
             zipDownloadLink.href = URL.createObjectURL(content);
             zipDownloadLink.click();
             
-            // Cleanup memory
             setTimeout(() => URL.revokeObjectURL(zipDownloadLink.href), 100);
         } else {
-            console.warn("JSZip library not found. Please add the script tag to your HTML.");
+            console.warn("JSZip library not found.");
         }
     } catch(e) {
         console.warn("Zip download failed or was blocked:", e);
@@ -306,15 +437,19 @@ document.getElementById('finish-phase1-btn').addEventListener('click', async () 
     currentPhase = 2;
     currentTool = 'draw';
 
-    // Move Canvas Wrapper to Phase 2 Layout
-    document.getElementById('phase-2').insertBefore(wrapper, document.getElementById('send-email-btn'));
+    // FIX: Insert wrapper perfectly before the export section
+    const exportSection = document.querySelector('.export-section');
+    document.getElementById('phase-2').insertBefore(wrapper, exportSection);
 
-    // CREATE TOP LAYER CANVAS FOR PHASE 2 (PERFECT OVERLAY LOCK)
+    // CREATE TOP LAYER CANVAS FOR PHASE 2
     if (!phase2Canvas) {
         phase2Canvas = document.createElement('canvas');
         phase2Canvas.id = 'phase2-drawing-canvas';
         phase2Canvas.className = 'canvas-layer';
         phase2Canvas.style.zIndex = '20';
+        phase2Canvas.style.position = 'absolute';
+        phase2Canvas.style.top = '0';
+        phase2Canvas.style.left = '0';
         phase2Canvas.width = canvas.width;
         phase2Canvas.height = canvas.height;
         phase2Ctx = phase2Canvas.getContext('2d');
@@ -322,66 +457,71 @@ document.getElementById('finish-phase1-btn').addEventListener('click', async () 
         bindCanvasEvents(phase2Canvas);
     }
 
-    // Force Palette Grid Re-alignment now that Phase 2 is visible
     setupPalettes();
     updateToolButtons();
 });
 
 // Phase 2: Start Anew (Clears top layer only, preserving frozen base)
 p2RestartBtn.addEventListener('click', () => {
-    if (phase2Ctx) {
-        phase2Ctx.clearRect(0, 0, phase2Canvas.width, phase2Canvas.height);
-    }
+    if (phase2Ctx) phase2Ctx.clearRect(0, 0, phase2Canvas.width, phase2Canvas.height);
+    // Remove stickers too
+    document.querySelectorAll('.canvas-sticker').forEach(sticker => sticker.remove());
 });
 
-// 7. Final Export & Email Composition (Flattens both layers into one PNG)
+// 7. Final Export & Email Composition (Flattens all 3 layers into one PNG)
 document.getElementById('send-email-btn').addEventListener('click', () => {
     try {
-        // Create export canvas to merge Base Layer + Top Layer
         const exportCanvas = document.createElement('canvas');
         exportCanvas.width = canvas.width;
         exportCanvas.height = canvas.height;
         const exportCtx = exportCanvas.getContext('2d');
 
-        // 1. Draw frozen Phase 1 base canvas
+        // 1. Draw Phase 1 base canvas
         exportCtx.drawImage(canvas, 0, 0);
 
-        // 2. Draw Phase 2 abstract drawings over it
+        // 2. Draw Phase 2 abstract drawings
         if (phase2Canvas) {
             exportCtx.drawImage(phase2Canvas, 0, 0);
         }
 
+        // 3. Draw All Stickers (CreateArt logic)
+        const stickers = document.querySelectorAll('.canvas-sticker');
+        stickers.forEach(sticker => {
+            const state = JSON.parse(sticker.dataset.state);
+            const img = sticker.querySelector('img');
+            const imgWidth = sticker.offsetWidth;
+            const imgHeight = sticker.offsetHeight;
+            
+            exportCtx.save();
+            exportCtx.translate(state.x, state.y);
+            exportCtx.rotate(state.angle);
+            exportCtx.scale(state.scale, state.scale);
+            // Draw relative to center since we translated to state.x/y
+            exportCtx.drawImage(img, -imgWidth / 2, -imgHeight / 2, imgWidth, imgHeight);
+            exportCtx.restore();
+        });
+
         const timestamp = Date.now();
 
-        // Convert to Blob for stable iPad/iOS downloading
+        // Convert to Blob
         exportCanvas.toBlob((blob) => {
-            if (!blob) {
-                console.error("Canvas export failed.");
-                return;
-            }
+            if (!blob) return;
 
             const blobUrl = URL.createObjectURL(blob);
             const downloadLink = document.createElement('a');
             downloadLink.download = `HEL_CompArt-${timestamp}.png`;
             downloadLink.href = blobUrl;
             
-            // Required DOM appending for reliable iOS triggers
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);
 
-            // Clean up the blob memory
             setTimeout(() => URL.revokeObjectURL(blobUrl), 200);
 
-            // Delay the alert by 800ms for download
             setTimeout(() => {
                 const userEmail = document.getElementById('user-email-input').value.trim();
-                
                 if (userEmail) {
-                    // Optional: Send data to your backend here
                     alert(`Your masterpiece has been downloaded! 🎨\n\nThank you, we've recorded ${userEmail} and will send your artwork soon.`);
-                    
-                    // Clear the input after successful submission
                     document.getElementById('user-email-input').value = ''; 
                 } else {
                     alert("Your masterpiece has been downloaded! 🎨");
