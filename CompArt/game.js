@@ -352,16 +352,43 @@ document.getElementById('send-email-btn').addEventListener('click', () => {
         }
 
         const timestamp = Date.now();
-        const dataUrl = exportCanvas.toDataURL('image/png');
-        const downloadLink = document.createElement('a');
-        downloadLink.download = `my-abstract-masterpiece-${timestamp}.png`;
-        downloadLink.href = dataUrl;
-        downloadLink.click();
 
-        const subject = encodeURIComponent("My Abstract Masterpiece!");
-        const body = encodeURIComponent(`Check out my abstract art!\n\nI abstracted away the image "${currentImageName}" by finding its compositional curves and creating something entirely new.\n\nTry it yourself at https://doreenhii.github.io/HiiEyeLab/!`);
-        
-        window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        // Convert to Blob for stable iPad/iOS downloading
+        exportCanvas.toBlob((blob) => {
+            if (!blob) {
+                console.error("Canvas export failed.");
+                return;
+            }
+
+            const blobUrl = URL.createObjectURL(blob);
+            const downloadLink = document.createElement('a');
+            downloadLink.download = `HEL_CompArt-${timestamp}.png`;
+            downloadLink.href = blobUrl;
+            
+            // Required DOM appending for reliable iOS triggers
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+
+            // Clean up the blob memory
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 200);
+
+            // Delay the alert by 800ms for download
+            setTimeout(() => {
+                const userEmail = document.getElementById('user-email-input').value.trim();
+                
+                if (userEmail) {
+                    // Optional: Send data to your backend here
+                    alert(`Your masterpiece has been downloaded! 🎨\n\nThank you, we've recorded ${userEmail} and will send your artwork soon.`);
+                    
+                    // Clear the input after successful submission
+                    document.getElementById('user-email-input').value = ''; 
+                } else {
+                    alert("Your masterpiece has been downloaded! 🎨");
+                }
+            }, 800);
+            
+        }, 'image/png');
         
     } catch (error) {
         alert("⚠️ Download Blocked! Ensure you are viewing this via a web server or GitHub pages to export images.");

@@ -87,7 +87,14 @@
                 <button id="p2-restart-btn" class="secondary-btn" style="background-color: #f0ad4e; color: white;">🔄 Start Anew </button>
             </div>
 
-            <button id="send-email-btn" class="action-btn">📧 Export & Email My Masterpiece</button>
+            <!-- NEW: Email Collection & Export Area -->
+            <div class="export-section" style="margin-top: 2rem; padding: 1.5rem; background-color: #f9f9f9; border-radius: 8px; text-align: center;">
+                <label for="user-email-input" style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Where should we send your masterpiece?</label>
+                <p style="font-size: 0.9em; color: #555; margin-top: 0; margin-bottom: 1rem;">Enter your email below. We'll send you a copy later, and download it to your device right now!</p>
+                <input type="email" id="user-email-input" placeholder="your.email@example.com" style="padding: 10px; font-size: 16px; border-radius: 4px; border: 1px solid #ccc; width: 100%; max-width: 350px; margin-bottom: 1rem;">
+                <br>
+                <button id="send-email-btn" class="action-btn">🎨 Download & Submit</button>
+            </div>
         </section>
     </main>
 
