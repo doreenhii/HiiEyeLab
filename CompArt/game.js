@@ -467,8 +467,8 @@ p2RestartBtn.addEventListener('click', () => {
     document.querySelectorAll('.canvas-sticker').forEach(sticker => sticker.remove());
 });
 
-// 7. Final Export & Email Composition (Flattens all 3 layers into one PNG)
-document.getElementById('send-email-btn').addEventListener('click', () => {
+// 7. Final Export & Email Composition (Flattens all layers into one PNG and Zips with TXT)
+document.getElementById('send-email-btn').addEventListener('click', async () => {
     try {
         const exportCanvas = document.createElement('canvas');
         exportCanvas.width = canvas.width;
@@ -495,60 +495,59 @@ document.getElementById('send-email-btn').addEventListener('click', () => {
             exportCtx.translate(state.x, state.y);
             exportCtx.rotate(state.angle);
             exportCtx.scale(state.scale, state.scale);
-            // Draw relative to center since we translated to state.x/y
             exportCtx.drawImage(img, -imgWidth / 2, -imgHeight / 2, imgWidth, imgHeight);
             exportCtx.restore();
         });
 
         const timestamp = Date.now();
+        const userEmail = document.getElementById('user-email-input').value.trim();
 
-        // Convert to Blob
-        exportCanvas.toBlob((blob) => {
-            if (!blob) return;
-
-            // --- DOWNLOAD 1: PNG IMAGE ---
-            const blobUrl = URL.createObjectURL(blob);
-            const downloadLink = document.createElement('a');
-            downloadLink.download = `HEL_CompArt-${timestamp}.png`;
-            downloadLink.href = blobUrl;
+        // Check if JSZip is loaded (which it should be from Phase 1)
+        if (typeof JSZip !== 'undefined') {
+            const zip = new JSZip();
             
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
+            // --- ADD IMAGE TO ZIP ---
+            const dataUrl = exportCanvas.toDataURL('image/png');
+            const base64Data = dataUrl.split(',')[1];
+            zip.file(`HEL_CompArt-${timestamp}.png`, base64Data, {base64: true});
 
-            setTimeout(() => URL.revokeObjectURL(blobUrl), 200);
-
-            // --- DOWNLOAD 2: TEXT FILE (No setTimeout delay!) ---
-            const userEmail = document.getElementById('user-email-input').value.trim();
+            // --- ADD TEXT FILE TO ZIP (if email is provided) ---
+            let hasEmail = false;
             if (userEmail) {
                 const textContent = `User Email: ${userEmail}\nTimestamp: ${new Date().toLocaleString()}`;
-                const textBlob = new Blob([textContent], { type: 'text/plain' });
-                const textUrl = URL.createObjectURL(textBlob);
-                
-                const textLink = document.createElement('a');
-                textLink.download = `User-Email-${timestamp}.txt`;
-                textLink.href = textUrl;
-                
-                document.body.appendChild(textLink);
-                textLink.click();
-                document.body.removeChild(textLink);
-                
-                setTimeout(() => URL.revokeObjectURL(textUrl), 200);
-
-                // Delay ONLY the alert so it doesn't pause the browser before downloads start
-                setTimeout(() => {
-                    alert(`Your masterpiece has been downloaded! 🎨\n\nWe also saved the email address (${userEmail}) in a separate text file.`);
-                    document.getElementById('user-email-input').value = ''; 
-                }, 100);
-            } else {
-                setTimeout(() => {
-                    alert("Your masterpiece has been downloaded! 🎨");
-                }, 100);
+                zip.file(`User-Email-${timestamp}.txt`, textContent);
+                hasEmail = true;
             }
+
+            // --- GENERATE AND DOWNLOAD ZIP ---
+            const content = await zip.generateAsync({type: "blob"});
+            const zipUrl = URL.createObjectURL(content);
             
-        }, 'image/png');
+            const zipDownloadLink = document.createElement('a');
+            zipDownloadLink.download = `HEL_CompArt_Export_${timestamp}.zip`;
+            zipDownloadLink.href = zipUrl;
+            
+            document.body.appendChild(zipDownloadLink);
+            zipDownloadLink.click();
+            document.body.removeChild(zipDownloadLink);
+            
+            // Cleanup
+            setTimeout(() => URL.revokeObjectURL(zipUrl), 200);
+
+            // Notify User
+            if (hasEmail) {
+                alert(`Your masterpiece and email have been downloaded together in a ZIP file! 🎨`);
+                document.getElementById('user-email-input').value = ''; 
+            } else {
+                alert(`Your masterpiece has been downloaded in a ZIP file! 🎨\n(No email entered, so no text file was included.)`);
+            }
+
+        } else {
+            alert("⚠️ JSZip library is missing! Cannot create the ZIP file.");
+        }
         
     } catch (error) {
-        alert("⚠️ Download Blocked! Ensure you are viewing this via a web server or GitHub pages to export images.");
+        console.error(error);
+        alert("⚠️ Download Blocked or Failed! Ensure you are viewing this via a web server or GitHub pages to export images.");
     }
 });
