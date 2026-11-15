@@ -520,13 +520,29 @@ document.getElementById('send-email-btn').addEventListener('click', () => {
             setTimeout(() => {
                 const userEmail = document.getElementById('user-email-input').value.trim();
                 if (userEmail) {
-                    alert(`Your masterpiece has been downloaded! 🎨\n\nThank you, we've recorded ${userEmail} and will send your artwork soon.`);
+                    // 1. Create a text file containing the email address
+                    const textContent = `User Email: ${userEmail}\nTimestamp: ${new Date().toLocaleString()}`;
+                    const textBlob = new Blob([textContent], { type: 'text/plain' });
+                    const textUrl = URL.createObjectURL(textBlob);
+                    
+                    // 2. Trigger the download for the text file
+                    const textLink = document.createElement('a');
+                    textLink.download = `User-Email-${timestamp}.txt`;
+                    textLink.href = textUrl;
+                    
+                    document.body.appendChild(textLink);
+                    textLink.click();
+                    document.body.removeChild(textLink);
+                    
+                    // Clean up the URL
+                    setTimeout(() => URL.revokeObjectURL(textUrl), 200);
+
+                    alert(`Your masterpiece has been downloaded! 🎨\n\nWe also saved the email address (${userEmail}) in a separate text file download.`);
                     document.getElementById('user-email-input').value = ''; 
                 } else {
                     alert("Your masterpiece has been downloaded! 🎨");
                 }
-            }, 800);
-            
+            }, 800);            
         }, 'image/png');
         
     } catch (error) {
