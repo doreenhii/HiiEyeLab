@@ -92,7 +92,7 @@ initCanvas();
 function loadRandomImage() {
     const randomFile = referenceImages[Math.floor(Math.random() * referenceImages.length)];
     currentImageName = randomFile;
-    const path = `items/${randomFile}`;
+    const path = `images/${randomFile}`;
     refImageEl.src = path;
     overlayImageEl.src = path;
 }
@@ -128,7 +128,7 @@ function initCreateArtElements() {
     if(!grid) return;
     createArtElements.forEach(src => {
         const img = document.createElement('img');
-        img.src = `images/${src}`;
+        img.src = `items/${src}`;
         img.className = 'asset-thumbnail';
         img.title = "Click to add to canvas";
         img.addEventListener('click', () => addStickerToCanvas(`images/${src}`));
